@@ -59,25 +59,10 @@ This is the milestone that makes the device a device rather than a demo.
 
 Single layer, through-hole only. See `docs/hardware.md` § Single-layer routing.
 
-- [ ] Schematic in KiCad. **In progress.**
-
-> [!WARNING]
-> **Known defect in the current schematic: the power symbols have empty pin
-> names.** A `power:GND` symbol creates its net through a hidden pin *named*
-> `GND`; with the name blank, every power symbol contributes the same empty
-> name, so `+5V`, `+3V3` and `GND` merge into a single net and drag every
-> connected pin with them. The exported netlist is one 32-node short across the
-> supply.
->
-> The wiring itself is clean — no stray junctions, no T-contacts, unused pins
-> properly no-connected. Only the `lib_symbols` power definitions are corrupt.
->
-> **Fix:** delete every `+5V`, `GND` and `PWR_FLAG` symbol, re-place them with
-> **`P`** (Add Power Symbol) rather than `A`, save, and re-run ERC. Verify with
-> `kicad-cli sch export netlist` before routing — the ERC and the netlist are
-> the check that matters, not how the sheet looks.
-
-- [ ] Run ERC clean. Nothing below starts before this passes.
+- [x] Schematic in KiCad. ERC clean, netlist verified: 15 nets, every
+      connection matching the pin table in `docs/hardware.md`.
+- [ ] Assign the remaining footprints — `C1` has none yet.
+- [ ] Rename `J1` to `J2`. The BOM reserves `J1` for the antenna.
 - [ ] Placement: CC1101 socket at the board edge, SMA pointing outward;
       Supermini directly beside it; every ground-connected part at the perimeter.
 - [ ] Route on one face. **No jumper wires** — if the routing seems to need one,
