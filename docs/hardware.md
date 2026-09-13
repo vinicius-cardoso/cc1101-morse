@@ -27,18 +27,16 @@ The Supermini breaks out GPIO 0–10, 20, 21 — 13 usable pins.
 
 | GPIO | Function | Socket pin | Notes |
 |---|---|---|---|
-| 0 | CC1101 GDO0 | 3 | TX key out / RX data in |
-| 1 | CC1101 CSN | 4 | |
-| 3 | CC1101 SCK | 5 | |
-| 2 | CC1101 MOSI | 6 | |
-| 4 | CC1101 MISO | 7 | |
-| 7 | CC1101 GDO2 | 8 | wired, unused — see below |
+| 2 | CC1101 MOSI | 3 | |
+| 3 | CC1101 SCK | 4 | |
+| 4 | CC1101 MISO | 5 | |
+| 7 | CC1101 GDO2 | 6 | wired, unused — see below |
+| 0 | CC1101 GDO0 | 7 | TX key out / RX data in |
+| 1 | CC1101 CSN | 8 | |
 | 10 | Morse key | — | `INPUT_PULLUP`, active low |
 | 20 | Buzzer | — | sidetone |
 
-Listed in socket-pin order rather than GPIO order, because that is the order the
-wiring follows. Note SCK sits on socket pin 5 and MOSI on 6 — the reverse of the
-order you would guess.
+Listed in socket-pin order, because that is the order the wiring follows.
 
 **Total: 8 of 13 — 5 spare (GPIO5, 6, 8, 9, 21).**
 
@@ -219,21 +217,22 @@ some ship with female headers instead.
 
 | Socket pin | CC1101 | ESP32-C3 |
 |---|---|---|
-| 1 | GND | `GND` |
-| 2 | VCC | `+3V3` |
-| 3 | GDO0 | GPIO0 |
-| 4 | CSN | GPIO1 |
-| 5 | SCK | GPIO3 |
-| 6 | MOSI | GPIO2 |
-| 7 | MISO/GDO1 | GPIO4 |
-| 8 | GDO2 | GPIO7 — wired, unused |
+| 1 | VCC | `+3V3` |
+| 2 | GND | `GND` |
+| 3 | MOSI | GPIO2 |
+| 4 | SCK | GPIO3 |
+| 5 | MISO/GDO1 | GPIO4 |
+| 6 | GDO2 | GPIO7 — wired, unused |
+| 7 | GDO0 | GPIO0 |
+| 8 | CSN | GPIO1 |
 
-This is the order on the common `433M` module silkscreen, and it matches what
-Sparks wires. Two things about it are easy to get backwards:
+Taken from the silkscreen of the module in hand. **Sparks wires a different
+order** (GND on 1, VCC on 2, SCK before MOSI) — its module is a different
+revision. Do not copy one board's table onto the other; read the silkscreen of
+the module you are actually plugging in.
 
-- **Pin 1 is GND, not VCC.** The supply pair is the opposite way round from
-  what most 8-pin headers do.
-- **Pins 5 and 6 are SCK then MOSI**, not MOSI then SCK.
+Getting the supply pair backwards destroys the module, and on an etched board
+that is not recoverable.
 
 > [!NOTE]
 > Pin order varies between CC1101 module revisions. Check the silkscreen on the
