@@ -1,0 +1,117 @@
+# Roadmap
+
+Ordered so that each step produces something testable, and so the parts that are
+still undecided stay off the critical path.
+
+The ANATEL question blocks transmitting on air, so everything up to and including
+the PCB is arranged to happen without needing it answered — bench work into a
+dummy load is legal and proves the whole design.
+
+## Phase 0 — firmware without hardware
+
+The sketch runs on a bare ESP32-C3 Supermini with nothing else attached.
+`radio.h` defaults to `RADIO_SIMULATE 1`, which prints what it would key instead
+of driving the chip.
+
+- [x] Key timing: debounce, classify dot vs dash by duration. Carried from
+      Sparks unchanged — same pin, same adaptive algorithm.
+- [x] Tree walk and letter decode → serial.
+- [x] Adaptive timing, so the dot/dash threshold follows the user's speed.
+- [x] Sidetone keyed with the input.
+- [ ] Flash it, key a button on GPIO10, confirm letters come out right.
+- [ ] Check the adaptive unit settles sensibly for a beginner's keying — it is
+      carried over from Sparks but was never tested against real hardware there
+      either.
+
+## Phase 1 — the radio on a breadboard
+
+No PCB needed. Supermini + CC1101 module on jumper wires.
+
+- [ ] Wire the CC1101 per the pin table in `docs/hardware.md`. **Check the
+      module's silkscreen against it first** — pin order varies by revision and
+      crossing VCC/GND destroys the module.
+- [ ] Set `RADIO_SIMULATE 0`. Confirm SPI talks: read the `PARTNUM` and `VERSION`
+      status registers and check they are sane (`0x00` / `0x14`). This is the
+      first thing to do and it isolates wiring problems from everything else.
+- [ ] **Fit a 50 Ω dummy load**, not the whip. Everything below happens into the
+      dummy load until ANATEL is settled.
+- [ ] Transmit: key the radio and confirm the carrier appears. An SDR dongle or
+      a second CC1101 is enough to see it.
+- [ ] Receive: put the module in RX, confirm GDO0 follows an incoming carrier.
+- [ ] Tune `RADIO_RX_MIN_MARK_MS` against the real noise floor. 433 MHz is busy —
+      garage doors, weather stations, car fobs — and the current value is a
+      guess.
+
+## Phase 2 — two units talking
+
+This is the milestone that makes the device a device rather than a demo.
+
+- [ ] Build a second breadboard unit.
+- [ ] Key one, decode on the other. Both into dummy loads, sitting next to each
+      other — at a few centimetres the leakage is plenty of signal.
+- [ ] Confirm the RX sidetone pitch (550 Hz) is distinguishable from your own
+      keying (700 Hz) by ear, which is the point of having two pitches.
+- [ ] Full duplex-ish behaviour: what happens if both key at once? Decide whether
+      that needs handling or is just an operator problem, the way it is on a real
+      band.
+
+## Phase 3 — PCB
+
+Single layer, through-hole only. See `docs/hardware.md` § Single-layer routing.
+
+- [ ] Schematic in KiCad. **In progress.**
+
+> [!WARNING]
+> **Known defect in the current schematic: the power symbols have empty pin
+> names.** A `power:GND` symbol creates its net through a hidden pin *named*
+> `GND`; with the name blank, every power symbol contributes the same empty
+> name, so `+5V`, `+3V3` and `GND` merge into a single net and drag every
+> connected pin with them. The exported netlist is one 32-node short across the
+> supply.
+>
+> The wiring itself is clean — no stray junctions, no T-contacts, unused pins
+> properly no-connected. Only the `lib_symbols` power definitions are corrupt.
+>
+> **Fix:** delete every `+5V`, `GND` and `PWR_FLAG` symbol, re-place them with
+> **`P`** (Add Power Symbol) rather than `A`, save, and re-run ERC. Verify with
+> `kicad-cli sch export netlist` before routing — the ERC and the netlist are
+> the check that matters, not how the sheet looks.
+
+- [ ] Run ERC clean. Nothing below starts before this passes.
+- [ ] Placement: CC1101 socket at the board edge, SMA pointing outward;
+      Supermini directly beside it; every ground-connected part at the perimeter.
+- [ ] Route on one face. **No jumper wires** — if the routing seems to need one,
+      the placement is wrong, not the constraint.
+- [ ] Ground as a perimeter trace with short stubs inward, not a pour.
+- [ ] Engrave, drill (~34 holes, all 0.8–1.0 mm), populate, test.
+
+## Phase 4 — on the air
+
+- [ ] **Research ANATEL limits for 433 MHz short-range in Brazil. Blocking.**
+      Nothing in this phase happens before this is answered.
+- [ ] Swap the dummy load for the whip. Range test between two units.
+- [ ] Characterise: how far, and how badly does the band's existing traffic
+      corrupt reception in practice?
+
+## Phase 5 — case
+
+- [ ] Onshape model around the finished board.
+- [ ] Opening for the SMA whip, or a panel-mount pigtail so the module's
+      placement is not dictated by the antenna.
+- [ ] Design for the whip being unscrewed for storage — it is detachable and the
+      device is meant to be pocketable.
+- [ ] Export STEP/STL to `mechanical/`.
+
+## Ideas, unscheduled
+
+- **I²C OLED** on GPIO8/9 showing decoded text, so the device is usable without a
+  computer attached. The pin budget has five spare, so this costs nothing but the
+  part — it is the most obvious next feature.
+- **Beacon mode:** transmit a stored message on a timer. Useful for range
+  testing alone.
+- **Practice mode without the radio:** the device sends a letter to the buzzer,
+  you copy it back on the key. Reverse training, no RF involved, so no
+  regulatory question.
+- **Store what you sent** and replay it, for reviewing your own fist.
+- **Adjustable TX power** via `PATABLE`, exposed as a serial command — useful for
+  bench work and for staying inside whatever limit ANATEL turns out to set.

@@ -1,0 +1,4 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "ESP32-C3-SuperMini")(type "KiCad")(uri "${KIPRJMOD}/../libraries/ESP32-C3-SuperMini.pretty")(options "")(descr "ESP32-C3 SuperMini module footprint"))
+)
