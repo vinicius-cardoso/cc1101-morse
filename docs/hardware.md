@@ -27,18 +27,24 @@ The Supermini breaks out GPIO 0–10, 20, 21 — 13 usable pins.
 
 | GPIO | Function | Socket pin | Notes |
 |---|---|---|---|
-| 2 | CC1101 MOSI | 3 | |
-| 3 | CC1101 SCK | 4 | |
-| 4 | CC1101 MISO | 5 | |
+| 6 | CC1101 MOSI | 3 | |
+| 5 | CC1101 SCK | 4 | |
+| 2 | CC1101 MISO | 5 | |
 | 7 | CC1101 GDO2 | 6 | wired, unused — see below |
 | 0 | CC1101 GDO0 | 7 | TX key out / RX data in |
 | 1 | CC1101 CSN | 8 | |
 | 10 | Morse key | — | `INPUT_PULLUP`, active low |
 | 20 | Buzzer | — | sidetone |
 
+**Total: 8 of 13 — 5 spare (GPIO3, 4, 8, 9, 21).**
+
 Listed in socket-pin order, because that is the order the wiring follows.
 
-**Total: 8 of 13 — 5 spare (GPIO5, 6, 8, 9, 21).**
+**The SPI assignment was chosen by the layout, not by the chip.** Every SPI line
+here is bit-banged, so any GPIO serves, and the mapping was picked by searching
+for the one whose traces do not cross. On a single-layer board a crossing is not
+a nuisance — it is a trace that cannot be routed at all. See
+`docs/decisions.md` §9.
 
 ### GDO2 is wired but not used
 
@@ -58,14 +64,15 @@ packet format* and `RADIO_RX_MIN_MARK_MS` in `firmware/cc1101-morse/radio.h`.
 Until then it is configured three-state (`0x2E`) and held as an input on the
 ESP32-C3 side, so neither chip drives it.
 
-The pin numbers match Sparks exactly for the parts they share, so firmware moves
-between the two boards without re-mapping. The freed pins are the three the
-MAX7219 used (5, 6, 7), the battery sense (21), and the two Sparks already kept
-spare (8, 9) — of which GPIO7 is spent again on GDO2 above, leaving five.
+The key (GPIO10) and buzzer (GPIO20) match Sparks exactly, so `key.cpp` and
+`sidetone.cpp` move between the two boards without re-mapping. The CC1101 lines
+no longer match — they were reassigned for routing, which is harmless because
+they are bit-banged on both boards.
 
-GPIO8/GPIO9 are the strapping pins and the I²C defaults; leaving them free keeps
-room for an I²C peripheral — a small OLED for the decoded text is the obvious
-candidate, and with five pins spare there is no longer any pressure against it.
+GPIO8/GPIO9 are the strapping pins and the I²C defaults, and they stayed free
+even though using them would have given a shorter route: the crossing-free search
+was deliberately restricted to GPIO0–7 so an I²C peripheral — a small OLED for
+the decoded text — remains possible. GPIO3, GPIO4 and GPIO21 are spare too.
 
 Pin numbers above are a starting proposal — adjust during KiCad layout if routing
 prefers a different assignment. Only the CC1101 SPI grouping is semi-fixed.
@@ -219,9 +226,9 @@ some ship with female headers instead.
 |---|---|---|
 | 1 | VCC | `+3V3` |
 | 2 | GND | `GND` |
-| 3 | MOSI | GPIO2 |
-| 4 | SCK | GPIO3 |
-| 5 | MISO/GDO1 | GPIO4 |
+| 3 | MOSI | GPIO6 |
+| 4 | SCK | GPIO5 |
+| 5 | MISO/GDO1 | GPIO2 |
 | 6 | GDO2 | GPIO7 — wired, unused |
 | 7 | GDO0 | GPIO0 |
 | 8 | CSN | GPIO1 |

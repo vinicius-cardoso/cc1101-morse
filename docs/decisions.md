@@ -187,6 +187,46 @@ below it to be unmistakable and still comfortable.
 plays one fixed note, ignoring `tone()` entirely. This was already true on Sparks
 but matters more here, since the pitch distinction is now load-bearing.
 
+## 9. The SPI pin assignment was chosen by the router, not by hand
+
+**Decision:** MOSI on GPIO6, SCK on GPIO5, MISO on GPIO2 — replacing the
+original GPIO2/3/4, which had been picked to match Sparks.
+
+**Why:** the first autoroute attempt failed. Not marginally — it left a net
+unroutable and stalled. The cause was not the router: the straight-line paths
+between the connector and the MCU **crossed each other five times among seven
+nets**, because the connector's left-hand pins were assigned to the MCU's
+right-hand pins and vice versa.
+
+On a two-layer board a crossing is a via. On a single-layer board it is a trace
+that **cannot be routed at all**, so five crossings means the placement was
+unroutable no matter how long the router ran.
+
+**What makes the fix legal:** every SPI line here is bit-banged
+(`radio.cpp`, `transfer_()`), not driven by a hardware SPI peripheral. There is
+no fixed pin mapping to respect — any GPIO can carry any of these signals, and
+`docs/hardware.md` had already flagged the assignment as adjustable during
+layout. So the mapping is free, and the right way to pick it is to search for
+the permutation with no crossings rather than to guess.
+
+The search was restricted to **GPIO0–7**. Allowing GPIO8, GPIO9 and GPIO21 gave
+a crossing-free solution 41 mm shorter, but those are the strapping pins and the
+I²C defaults that §7 keeps free for an OLED. The shorter route was not worth
+spending them.
+
+**Result:** zero crossings, GPIO8/9/21 still free, three `#define` lines changed.
+
+**What this costs:** the CC1101 pins no longer match Sparks. That is a real loss
+— §7 kept them identical so code could move between the boards unread — but it
+applies only to `radio.cpp`, which Sparks does not have. The files the two
+projects genuinely share, `key.cpp` and `sidetone.cpp`, are on GPIO10 and GPIO20
+on both boards and are unaffected.
+
+**The general lesson, worth keeping:** when an autorouter fails on a trivial
+board, the placement or the assignment is wrong, not the router's settings. Count
+the crossings before touching anything else — on one layer that number is a hard
+bound on what is routable.
+
 ## Open items
 
 - **ANATEL limits** for 433 MHz short-range transmission in Brazil. Not

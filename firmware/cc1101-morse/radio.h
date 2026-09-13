@@ -49,9 +49,16 @@
 #endif
 
 // Pins — see docs/hardware.md
-#define RADIO_PIN_MOSI   2
-#define RADIO_PIN_SCK    3
-#define RADIO_PIN_MISO   4
+//
+// These are chosen by the PCB layout, not by the chip: every SPI
+// line here is bit-banged, so any GPIO will do and the assignment
+// is free to be whatever routes best. It was picked by searching
+// for the mapping with no crossing traces — the board is single
+// layer, so a crossing means a trace that cannot be routed at all.
+// See docs/decisions.md §9.
+#define RADIO_PIN_MOSI   6
+#define RADIO_PIN_SCK    5
+#define RADIO_PIN_MISO   2
 #define RADIO_PIN_CS     1
 #define RADIO_PIN_GDO0   0
 
