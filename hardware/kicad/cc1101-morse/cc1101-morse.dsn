@@ -274,22 +274,16 @@
       (pins U1-2 J1-8)
     )
     (net "Net-(J1-Pin_3)"
-      (pins U1-3 J1-3)
+      (pins U1-10 J1-3)
     )
     (net "Net-(J1-Pin_4)"
-      (pins U1-4 J1-4)
+      (pins U1-9 J1-4)
     )
     (net "Net-(J1-Pin_5)"
-      (pins U1-5 J1-5)
+      (pins U1-3 J1-5)
     )
     (net "Net-(J1-Pin_1)"
       (pins U1-6 J1-1)
-    )
-    (net "unconnected-(U1-GPIO5-Pad9)"
-      (pins U1-9)
-    )
-    (net "unconnected-(U1-GPIO6-Pad10)"
-      (pins U1-10)
     )
     (net "Net-(J1-Pin_6)"
       (pins U1-11 J1-6)
@@ -303,10 +297,16 @@
     (net "unconnected-(U1-GPIO21-Pad16)"
       (pins U1-16)
     )
+    (net "unconnected-(U1-GPIO4-Pad5)"
+      (pins U1-5)
+    )
+    (net "unconnected-(U1-GPIO3-Pad4)"
+      (pins U1-4)
+    )
     (class kicad_default +5V GND "Net-(BZ1-+)" "Net-(J1-Pin_1)" "Net-(J1-Pin_3)"
       "Net-(J1-Pin_4)" "Net-(J1-Pin_5)" "Net-(J1-Pin_6)" "Net-(J1-Pin_7)"
-      "Net-(J1-Pin_8)" "Net-(U1-GPIO10)" "unconnected-(U1-GPIO21-Pad16)" "unconnected-(U1-GPIO5-Pad9)"
-      "unconnected-(U1-GPIO6-Pad10)" "unconnected-(U1-GPIO8-Pad12)" "unconnected-(U1-GPIO9-Pad13)"
+      "Net-(J1-Pin_8)" "Net-(U1-GPIO10)" "unconnected-(U1-GPIO21-Pad16)" "unconnected-(U1-GPIO3-Pad4)"
+      "unconnected-(U1-GPIO4-Pad5)" "unconnected-(U1-GPIO8-Pad12)" "unconnected-(U1-GPIO9-Pad13)"
       (circuit
         (use_via "Via[0-1]_600:300_um")
       )
@@ -317,5 +317,6 @@
     )
   )
   (wiring
+    (wire (path F.Cu 400  144000 -88500  143650 -88850)(net GND)(type route))
   )
 )
