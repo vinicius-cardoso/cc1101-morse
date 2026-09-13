@@ -2564,7 +2564,7 @@
 		(fields_autoplaced yes)
 		(uuid "4061ff09-46a6-4b81-9a70-38bb106a833f")
 		(property "Reference" "J1"
-			(at 191.77 68.5799 90)
+			(at 191.77 69.8499 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

@@ -439,7 +439,7 @@
 	(footprint "Button_Switch_THT:SW_PUSH_6mm"
 		(layer "F.Cu")
 		(uuid "941379ec-5b7d-484e-9231-3822c66d8214")
-		(at 146.25 117.25)
+		(at 146.5 114.5)
 		(descr "Generic 6mm SW tactile push button")
 		(tags "tact sw push 6mm")
 		(property "Reference" "SW1"
@@ -1448,7 +1448,7 @@
 		(property "Reference" "J1"
 			(at -1.27 -2.77 90)
 			(layer "F.SilkS")
-			(uuid "4501c735-4949-4313-95f4-3fa719bb337b")
+			(uuid "59c1aaa9-f2b1-46ef-b362-6986f7739b81")
 			(effects
 				(font
 					(size 1 1)
@@ -1460,7 +1460,7 @@
 			(at -1.27 10.39 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "5cb4e7c3-1739-4c60-af04-1a3cba5ee746")
+			(uuid "5d1fcc97-989c-4404-93c9-5c698b1f7892")
 			(effects
 				(font
 					(size 1 1)
@@ -1472,7 +1472,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "8b433011-9c88-4756-bfd4-30451568af80")
+			(uuid "20f4816b-ef4d-4588-bf7f-0f904dde09b8")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1483,7 +1483,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "3bd0b5b2-a9e3-4a5f-be56-79cd4bd023c1")
+			(uuid "bf836360-f145-4530-b613-c58c8a951082")
 			(effects
 				(font
 					(size 1.27 1.27)

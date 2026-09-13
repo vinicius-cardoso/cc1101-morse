@@ -350,6 +350,33 @@ SMA pointing outward**, and put the Supermini directly beside it so the SPI
 bundle is as short as possible. SPI at the CC1101's clock rates is not
 especially fussy, but a short bundle also means a short board.
 
+## Design rules
+
+| Setting | Value |
+|---|---|
+| Track width | 0.4 mm |
+| Clearance | 0.4 mm |
+| Net classes | none — everything on `Default` |
+
+**No net classes.** They exist to give groups of nets different physical rules,
+and nothing here needs different rules: eight digital signals at Morse speeds,
+plus power and ground. The SPI clock runs at a few hundred kHz and GDO0 switches
+at the speed of a hand. Nothing is fast, high-current, or impedance-controlled.
+
+0.4 mm is wider than a fab house's usual 0.25 mm default, which is the right
+direction for laser etching — the cut widens as it bites, so the copper that
+survives is narrower than drawn, and roughness at the trace edge matters more
+than it would with photolithography. The board has twelve nets and acres of
+spare copper, so the margin is free.
+
+**Worth considering later: widen `GND` to ~0.8 mm.** Ground is routed as a
+perimeter trace rather than a pour (see *Single-layer routing* above), which
+makes it a long thin strip near the board edge carrying every return current
+and absorbing whatever handling the board gets. The electrical case is nil at
+85 mA; the mechanical one is real, and a partially-lifted ground trace fails
+intermittently rather than cleanly — the worst kind of fault to chase. One net
+class, no routing cost.
+
 ## Fabrication
 
 Copper engraved with a fiber laser. Relevant consequences:
