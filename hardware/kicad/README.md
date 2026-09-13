@@ -33,7 +33,7 @@ discover late:
 ## Footprints
 
 All through-hole. The full table is in `docs/hardware.md` § KiCad reference —
-`SW_PUSH_6mm`, `Buzzer_12x9.5RM7.6mm`, `PinSocket_2x04_P2.54mm_Vertical`,
+`SW_PUSH_6mm`, `Buzzer_12x9.5RM7.6`, `PinSocket_2x04_P2.54mm_Vertical`,
 `PinHeader_1x02_P2.54mm_Vertical`, `C_Disc_D5.0mm_W2.5mm_P5.00mm`.
 
 ## What to commit

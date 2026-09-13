@@ -25,16 +25,20 @@ directions — see *OOK and why there is no packet format* below.
 
 The Supermini breaks out GPIO 0–10, 20, 21 — 13 usable pins.
 
-| GPIO | Function | Notes |
-|---|---|---|
-| 2 | CC1101 MOSI | |
-| 3 | CC1101 SCK | |
-| 4 | CC1101 MISO | |
-| 1 | CC1101 CS | |
-| 0 | CC1101 GDO0 | TX key out / RX data in |
-| 7 | CC1101 GDO2 | wired, unused — see below |
-| 10 | Morse key | `INPUT_PULLUP`, active low |
-| 20 | Buzzer | sidetone |
+| GPIO | Function | Socket pin | Notes |
+|---|---|---|---|
+| 0 | CC1101 GDO0 | 3 | TX key out / RX data in |
+| 1 | CC1101 CSN | 4 | |
+| 3 | CC1101 SCK | 5 | |
+| 2 | CC1101 MOSI | 6 | |
+| 4 | CC1101 MISO | 7 | |
+| 7 | CC1101 GDO2 | 8 | wired, unused — see below |
+| 10 | Morse key | — | `INPUT_PULLUP`, active low |
+| 20 | Buzzer | — | sidetone |
+
+Listed in socket-pin order rather than GPIO order, because that is the order the
+wiring follows. Note SCK sits on socket pin 5 and MOSI on 6 — the reverse of the
+order you would guess.
 
 **Total: 8 of 13 — 5 spare (GPIO5, 6, 8, 9, 21).**
 
@@ -215,14 +219,21 @@ some ship with female headers instead.
 
 | Socket pin | CC1101 | ESP32-C3 |
 |---|---|---|
-| 1 | VCC | `+3V3` |
-| 2 | GND | `GND` |
-| 3 | MOSI | GPIO2 |
-| 4 | SCK | GPIO3 |
-| 5 | MISO/GDO1 | GPIO4 |
-| 6 | GDO2 | GPIO7 — wired, unused |
-| 7 | GDO0 | GPIO0 |
-| 8 | CSN | GPIO1 |
+| 1 | GND | `GND` |
+| 2 | VCC | `+3V3` |
+| 3 | GDO0 | GPIO0 |
+| 4 | CSN | GPIO1 |
+| 5 | SCK | GPIO3 |
+| 6 | MOSI | GPIO2 |
+| 7 | MISO/GDO1 | GPIO4 |
+| 8 | GDO2 | GPIO7 — wired, unused |
+
+This is the order on the common `433M` module silkscreen, and it matches what
+Sparks wires. Two things about it are easy to get backwards:
+
+- **Pin 1 is GND, not VCC.** The supply pair is the opposite way round from
+  what most 8-pin headers do.
+- **Pins 5 and 6 are SCK then MOSI**, not MOSI then SCK.
 
 > [!NOTE]
 > Pin order varies between CC1101 module revisions. Check the silkscreen on the
@@ -290,7 +301,7 @@ a generic connector sized to its pin count:
 | CC1101 socket | `Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical` |
 | ESP32-C3 Supermini | local `ESP32-C3-SuperMini.pretty` |
 | Tactile switch | `Button_Switch_THT:SW_PUSH_6mm` |
-| Buzzer | `Buzzer_Beeper:Buzzer_12x9.5RM7.6mm` |
+| Buzzer | `Buzzer_Beeper:Buzzer_12x9.5RM7.6` |
 | Battery header | `Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical` |
 | Decoupling cap | `Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm` |
 

@@ -2586,7 +2586,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical"
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical"
 			(at 184.15 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -3074,7 +3074,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm"
 			(at 130.81 100.33 0)
 			(hide yes)
 			(show_name no)
@@ -3516,7 +3516,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
 			(at 113.9952 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -3598,7 +3598,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Buzzer_Beeper:Buzzer_12x9.5RM7.6"
 			(at 132.715 113.03 90)
 			(hide yes)
 			(show_name no)
