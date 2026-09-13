@@ -90,16 +90,13 @@ This is a genuine simplification rather than a deferral. Nothing on the board
 wants more than 3.3 V, so there is no second rail to generate and no converter
 to calibrate — the two failure modes that a mixed-voltage supply brings with it.
 
-### Battery pads (J3, unpopulated)
+### Going portable later
 
-A 2-pin header brings `VIN` and `GND` out to the board edge:
+There is **no battery header on the board** — the option was considered and left
+off, since a cell can be soldered to the Supermini's own `5V`/`GND` pins if it is
+ever wanted.
 
-| Pin | Net |
-|---|---|
-| 1 | `VIN` (Supermini 5V/VIN pin) |
-| 2 | `GND` |
-
-To go portable later: a LiPo cell and a TP4056 charge module wire to these two
+To go portable: a LiPo cell and a TP4056 charge module wire to these two
 pins and nothing else changes. The CC1101 and ESP32-C3 are both 3.3 V, so a
 3.7 V cell feeds `VIN` directly and the onboard regulator handles it — **no
 boost converter needed**.
@@ -205,7 +202,7 @@ board, it is the part most likely to be swapped (different band, different modul
 revision), and it carries the rigid SMA connector that constrains the case — all
 reasons to keep it removable.
 
-**The module has male pins, so the board carries a female socket** (`J2`, a 2×4
+**The module has male pins, so the board carries a female socket** (`J1`, a 2×4
 pin socket). The module plugs down into it. Worth stating explicitly because the
 two footprints have different drill diameters and are not interchangeable — the
 wrong one means a board that is etched and drilled but will not accept the part:
@@ -327,23 +324,29 @@ There are four things to connect and only three real nets bundles:
 - **Buzzer** — one trace, plus ground.
 - **Power** — `+3V3` and `GND` to the socket.
 
-Ground is the only net that reaches everything, and on a single-layer board it
-is routed as a **perimeter trace** around the board edge with short stubs inward,
-rather than as a pour. Every ground-connected part sits at the board edge, which
-is arranged deliberately:
+Ground is the only net that reaches everything, and it is a **filled zone**
+rather than a routed net — see `docs/decisions.md` §10. That is what makes the
+rest fit on one face: every ground pad drops into the pour wherever it sits, so
+the net that touches every part never has to be threaded past the others.
 
 ```
    ┌──────────────────────────────────┐
-   │  ○ J3                      BZ1 ○ │   ← ground perimeter
-   │                                  │
-   │   ┌──────────┐      ┌────────┐   │
-   │   │ ESP32-C3 │═════▶│  J2    │   │   ← SPI bundle, 6 traces
-   │   │ Supermini│      │ CC1101 │   │
-   │   └──────────┘      └────────┘   │
-   │                                  │
-   │  ○ SW1                    SMA ▶  │
+   │   ⊕  J1 (CC1101)          BZ1 ●  │   ← whole board is GND pour
+   │      ▓▓▓▓▓▓▓▓                    │
+   │   TP1 TP2                        │
+   │   C1 ▬                           │
+   │      ┌────────────────────┐      │
+   │      │   ESP32-C3 (U1)    │      │
+   │      └────────────────────┘      │
+   │            ▢ SW1                 │
+   │   ⊕                          ⊕   │   ← M3 holes at corners
    └──────────────────────────────────┘
+            40 × 60 mm
 ```
+
+As built: `J1` at the top edge so the module's SMA points off the board, `U1`
+centred beneath it, `SW1` below that, and the buzzer top-right. Four M3 holes
+at the corners.
 
 Placement rule for layout: **keep the CC1101 socket on the board edge with the
 SMA pointing outward**, and put the Supermini directly beside it so the SPI

@@ -5,9 +5,9 @@
 - **status** — `have` / `to buy` / `to make`
 - **notes** — anything that would otherwise be lost between sessions
 
-## Eight parts
+## Seven parts to solder
 
-That is the headline: eight parts, none of them surface-mount.
+Plus four mounting holes. None of it is surface-mount.
 
 There is no `conditional` status in this BOM and no `phase 2` status either.
 Every part is needed for the only version of the board that exists — nothing is

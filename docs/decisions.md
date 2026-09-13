@@ -63,27 +63,25 @@ two-sided laser registration and alignment holes for a board that does not need
 it. Single layer is the point of this design; if the routing ever genuinely
 requires a second layer, that is a signal the scope crept.
 
-## 4. USB-C power, with battery pads
+## 4. USB-C power, no battery
 
-**Decision:** powered from the ESP32-C3 Supermini's own USB-C port. A 2-pin
-header (`J3`) brings `VIN`/`GND` to the edge, unpopulated.
+**Decision:** powered from the ESP32-C3 Supermini's own USB-C port. No battery,
+and no header for one.
 
 **Why:** the CC1101 and the ESP32-C3 are both 3.3 V natively, so there is no
 second rail to generate. The Supermini's onboard regulator is the entire power
 design — zero power components on the board.
 
-**Why pads rather than a battery now:** the board's first job is bench work —
-talking to a second unit, testing into a dummy load, settling the ANATEL
-question. All of that happens next to a computer, where USB is already connected
-for the serial monitor anyway. Two pads keep the option open at the cost of one
-header.
-
-If a battery is added later it feeds `VIN` directly — no boost converter, since
-nothing on the board wants more than 3.3 V.
+**Why no battery now:** the board's first job is bench work — talking to a second
+unit, testing into a dummy load, settling the ANATEL question. All of that
+happens next to a computer, where USB is already connected for the serial monitor
+anyway.
 
 **Rejected:** fitting the battery now. It is a cell, a charge module, a switch,
 and a sense divider — four parts and their traces — for a capability nothing
-currently needs.
+currently needs. Adding it later means soldering to the Supermini's `5V`/`GND`
+pins, which needs no board change: nothing here wants more than 3.3 V, so no
+boost converter is involved.
 
 ## 5. Transceiver, not just a transmitter
 

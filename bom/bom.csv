@@ -1,11 +1,13 @@
 ref,qty,part,value,package,role,status,notes
 U1,1,ESP32-C3 Supermini,,module,MCU — timing/decoding/radio control,have,13 GPIO broken out (0-10 20 21); 3.3V native — matches CC1101 with no level shifting. Powers the board from its own USB-C
-U2,1,CC1101 module V2.0,433 MHz,module + SMA socket,RF transceiver — OOK TX and RX,have,SMA variant with detachable whip. SOCKETED not soldered — plugs into J2. CHECK SILKSCREEN PIN ORDER against docs/hardware.md before routing; varies by revision and crossing VCC/GND destroys it
-J2,1,Pin socket 2x4 female,2.54mm,PinSocket_2x04_P2.54mm_Vertical,CC1101 module socket,to buy,"FEMALE socket on the PCB — the module has MALE pins and plugs down into it. NOT PinHeader: different drill size, will not fit. Symbol: Conn_02x04_Odd_Even (generic — no dedicated CC1101 symbol needed)"
-J3,1,Pin header 1x2 male,2.54mm,PinHeader_1x02_P2.54mm_Vertical,battery pads — VIN/GND to board edge,to buy,UNPOPULATED. Lets a cell + TP4056 be added later with no respin. Both rails are 3.3V-native so no boost is needed — see docs/decisions.md §4
+U2,1,CC1101 module V2.0,433 MHz,module + SMA socket,RF transceiver — OOK TX and RX,have,SMA variant with detachable whip. SOCKETED not soldered — plugs into J1. CHECK SILKSCREEN PIN ORDER against docs/hardware.md before routing; varies by revision and crossing VCC/GND destroys it
+J1,1,Pin socket 2x4 female,2.54mm,PinSocket_2x04_P2.54mm_Vertical,CC1101 module socket,to buy,"FEMALE socket on the PCB — the module has MALE pins and plugs down into it. NOT PinHeader: different drill size, will not fit. Symbol: Conn_02x04_Odd_Even (generic — no dedicated CC1101 symbol needed)"
 SW1,1,Tactile switch 6x6mm,,"SW_PUSH_6mm (THT, 4-pin)",Morse key,to buy,classic 6x6 tact switch; 4 pins but only 2 nets. Pick _H5mm variant if button height matters for the case. Debounced in firmware (15ms) — no RC network on the board
 BZ1,1,Magnetic buzzer 12mm,,Buzzer_12x9.5RM7.6 (THT),sidetone on TX + audio on RX,to buy,"12mm dia, 9.5mm tall, 7.6mm pin pitch. MUST BE PASSIVE — an active buzzer has its own oscillator and ignores tone(). Two pitches are load-bearing here: 700Hz your keying, 550Hz received"
 C1,1,Capacitor,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm (THT),CC1101 supply decoupling,to buy,place close to the socket's VCC pin. Ceramic disc — through-hole to match the rest of the board
+TP1,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — 3V3,to buy,"2mm pad, 1mm drill. Takes a probe tip, a wire, or a header pin"
+TP2,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — GND,to buy,"scope ground, next to TP1"
+H1-H4,4,Mounting hole,M3,MountingHole_3.2mm_M3,board mounting — one per corner,to make,"3.2mm drill = M3 clearance. Plain hole, no copper pad"
 ,1,Antenna whip,433 MHz,SMA male stub,RF,have,ships with the module; screws onto the board SMA socket. Detachable — case needs an opening. Never key the radio without it or a dummy load
 ,1,Dummy load 50 ohm,,SMA male,bench testing without emitting,to buy,REQUIRED before any transmit test. Use until ANATEL limits are settled — see docs/roadmap.md phase 4
 ,1,PCB,,,main board,to make,fiber-laser engraved copper. SINGLE LAYER — one face only, no two-sided registration. ~34 holes, all 0.8-1.0mm

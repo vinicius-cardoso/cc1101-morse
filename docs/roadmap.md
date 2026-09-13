@@ -57,16 +57,19 @@ This is the milestone that makes the device a device rather than a demo.
 
 Single layer, through-hole only. See `docs/hardware.md` § Single-layer routing.
 
-- [x] Schematic in KiCad. ERC clean, netlist verified: 15 nets, every
-      connection matching the pin table in `docs/hardware.md`.
-- [ ] Assign the remaining footprints — `C1` has none yet.
-- [ ] Rename `J1` to `J2`. The BOM reserves `J1` for the antenna.
-- [ ] Placement: CC1101 socket at the board edge, SMA pointing outward;
-      Supermini directly beside it; every ground-connected part at the perimeter.
-- [ ] Route on one face. **No jumper wires** — if the routing seems to need one,
-      the placement is wrong, not the constraint.
-- [ ] Ground as a perimeter trace with short stubs inward, not a pour.
-- [ ] Engrave, drill (~34 holes, all 0.8–1.0 mm), populate, test.
+- [x] Schematic in KiCad. ERC clean, netlist verified against the pin table.
+- [x] Placement: CC1101 socket at the top edge, SMA pointing off the board;
+      Supermini centred beneath it; key below that; buzzer top-right.
+- [x] Route on one face. **No vias, no jumper wires.** Took a pin reassignment
+      to get there — see `docs/decisions.md` §9.
+- [x] Ground as a filled zone rather than a routed net — `docs/decisions.md` §10.
+- [x] Four M3 mounting holes, one per corner. Board is 40 × 60 mm.
+- [ ] **Refill the zone (`B`) and re-run DRC until clean.** A zone that has not
+      been refilled since the traces were laid reports a clearance violation
+      against every net it touches — DRC is meaningless until this is done.
+- [ ] Check no trace runs through a mounting hole. The autorouter could not read
+      the holes' keepout areas, so it routed without knowing they exist.
+- [ ] Engrave, drill, populate, test.
 
 ## Phase 4 — on the air
 

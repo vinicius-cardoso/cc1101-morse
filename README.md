@@ -12,18 +12,23 @@ through-hole only, no jumper wires**. There is no display — output is the buzz
 and the serial monitor — and that constraint is what keeps everything else
 small.
 
+<p align="center">
+  <img src="media/3d.png" alt="Rendered view of the assembled board" width="340">
+</p>
+
 ## Why it is simple
 
-What the board carries is one module, one socket, a button and a buzzer. Eight
-parts, none of them surface-mount, twelve nets. That routes on a single face
-with no crossings to resolve.
+What the board carries is one module on a socket, a button, a buzzer, one
+capacitor and two test points — plus the MCU. None of it surface-mount, twelve
+nets. That routes on a single face with no crossings to resolve.
 
 | | |
 |---|---|
 | Layers | **1** |
-| Parts to place | **8** |
+| Vias | **0** |
 | SMD parts | **0** |
 | Jumper wires | **0** |
+| Parts to solder | **7** |
 | Display | serial + buzzer |
 
 Zero SMD means the board can be hand-soldered from the underside with a plain
@@ -80,9 +85,30 @@ pin exactly the way it times the key. One decoder serves both directions.
 USB-C, from the ESP32-C3 Supermini's own port. No battery, no charger, no boost,
 no battery-sense divider — the board has **zero power components**.
 
-A 2-pin header (`J3`) brings the `VIN` / `GND` nets to the board edge, so a cell
-and a charge module can be bolted on later without a respin. It stays
-unpopulated for now.
+Going portable later means wiring a cell and a TP4056 to the Supermini's
+`5V`/`GND` pins. Nothing else changes, because nothing on the board wants more
+than 3.3 V — so no boost converter is involved.
+
+## The board
+
+<p align="center">
+  <img src="media/schematic.png" alt="Schematic: ESP32-C3 Supermini, CC1101 socket, key and buzzer" width="620">
+</p>
+
+Twelve nets and seven parts. The CC1101 plugs into `J1`; `SW1` is the key,
+`BZ1` the buzzer, `C1` the decoupling cap for the radio's supply, and `TP1`/`TP2`
+are probe points for 3V3 and ground.
+
+<p align="center">
+  <img src="media/pcb.png" alt="PCB layout: single layer, through-hole, ground pour" width="400">
+</p>
+
+Everything is on the front copper — **no vias, no back-side traces**. Ground is
+the pour filling the board rather than a routed net, which is what makes single
+layer work: the net that touches every part never has to be threaded past the
+others. See `docs/decisions.md` §10.
+
+Four M3 mounting holes, one per corner. Board is 40 × 60 mm.
 
 ## Repository layout
 
@@ -109,10 +135,18 @@ Keep editable sources as the source of truth: `.kicad_pro`, `.kicad_sch`,
 
 ## Status
 
-Early. Firmware is written and runs without a radio attached — `radio.h` defaults
-to `RADIO_SIMULATE 1`, which prints what it would transmit instead of driving the
-chip, so key timing and decoding can be exercised on a bare Supermini. The PCB is
-not drawn yet.
+**Schematic done; PCB nearly.** Routed on one layer with no vias and ground
+poured, but DRC is not clean yet — the zone needs refilling after the last
+routing pass, and two nets (VCC and MOSI) lost their connection during rework.
+See `docs/roadmap.md` phase 3. Nothing has been etched or assembled, so none of
+this has met real hardware.
+
+Firmware is written and runs without a radio attached: `radio.h` defaults to
+`RADIO_SIMULATE 1`, which prints what it would transmit instead of driving the
+chip, so key timing and decoding can be exercised on a bare Supermini.
+
+Next is phase 1 in `docs/roadmap.md` — wire the CC1101 on a breadboard and
+confirm SPI talks to it.
 
 ## Licence
 
