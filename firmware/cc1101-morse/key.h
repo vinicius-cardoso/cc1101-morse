@@ -16,10 +16,9 @@
 // everything else follows. The unit is measured as you send
 // rather than making you match a fixed speed — see below.
 //
-// Carried from Sparks unchanged, including the pin. The radio
-// receiver uses the same event vocabulary (see morse_event.h),
-// so a mark from the key and a mark from the air are handled
-// by exactly the same code downstream.
+// The radio receiver emits the same event vocabulary (see
+// morse_event.h), so a mark from the key and a mark from the air
+// are handled by exactly the same code downstream.
 //
 // ============================================================
 

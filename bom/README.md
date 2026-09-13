@@ -7,16 +7,12 @@
 
 ## Eight parts
 
-That is the headline. [Sparks](../../sparks) has 35 parts, 29 of them SMD; this
-board has 8, none of them SMD. The difference is almost entirely the LED panel
-and the power chain it dragged along with it — see `docs/decisions.md` §1 for the
-full cascade.
+That is the headline: eight parts, none of them surface-mount.
 
 There is no `conditional` status in this BOM and no `phase 2` status either.
-Every part is needed for the only version of the board that exists, which is a
-consequence worth noticing: Sparks carried an unpopulated radio footprint and a
-maybe-needed level shifter because its design had open questions the board had to
-accommodate. This one does not.
+Every part is needed for the only version of the board that exists — nothing is
+placed against a decision that has not been made yet, and nothing sits
+unpopulated waiting for an open question to close.
 
 ## Sourcing: Brazil
 
@@ -24,10 +20,10 @@ Parts are chosen to be buyable locally (Mercado Livre, national distributors)
 rather than imported. This is a selection criterion, not an afterthought — a part
 that is optimal on paper but import-only costs weeks and customs hassle.
 
-This BOM makes that easy in a way Sparks' did not. Every item is either already
-on hand or a generic through-hole part sold in any Brazilian electronics shop:
-a tact switch, a buzzer, a ceramic cap, two headers. Nothing here has a specific
-part number worth arguing about, and nothing is SMD-only.
+Every item is either already on hand or a generic through-hole part sold in any
+Brazilian electronics shop: a tact switch, a buzzer, a ceramic cap, two headers.
+Nothing here has a specific part number worth arguing about, and nothing is
+SMD-only.
 
 ## Things to get right
 
@@ -58,22 +54,3 @@ part number worth arguing about, and nothing is SMD-only.
 4. **Tact switch height.** The `_H5mm` variant sits taller, which matters once
    there is a case. Decide when the enclosure is modelled; the footprint is the
    same either way, so this is not blocking.
-
-## Not on this board, and why
-
-Worth recording so these are not re-added by reflex when someone reads the Sparks
-BOM alongside this one:
-
-| Part | Why it is absent |
-|---|---|
-| MAX7219, 26 LEDs, `RSET` | no LED panel — `docs/decisions.md` §1 |
-| Level shifter | nothing runs at 5 V |
-| HW-357 boost module | nothing needs 5 V, so nothing needs boosting |
-| LiPo cell, TP4056 | USB-C powers the board; `J3` keeps the option open |
-| Battery divider (2× 220k) | no battery to sense |
-| All 0805 passives | through-hole throughout — `docs/decisions.md` §2 |
-
-The HW-357 is the one genuinely worth being glad about: it ships with an
-uncalibrated trimmer that can output 10 V or more, and setting it to 5.0 V with a
-multimeter *before connecting anything* was a mandatory, destructive-if-skipped
-assembly step. That failure mode does not exist here.

@@ -13,15 +13,13 @@ The sketch runs on a bare ESP32-C3 Supermini with nothing else attached.
 `radio.h` defaults to `RADIO_SIMULATE 1`, which prints what it would key instead
 of driving the chip.
 
-- [x] Key timing: debounce, classify dot vs dash by duration. Carried from
-      Sparks unchanged — same pin, same adaptive algorithm.
+- [x] Key timing: debounce, classify dot vs dash by duration.
 - [x] Tree walk and letter decode → serial.
 - [x] Adaptive timing, so the dot/dash threshold follows the user's speed.
 - [x] Sidetone keyed with the input.
 - [ ] Flash it, key a button on GPIO10, confirm letters come out right.
-- [ ] Check the adaptive unit settles sensibly for a beginner's keying — it is
-      carried over from Sparks but was never tested against real hardware there
-      either.
+- [ ] Check the adaptive unit settles sensibly for a beginner's keying. The
+      1/8 pull rate is a guess and has never been tested against a real hand.
 
 ## Phase 1 — the radio on a breadboard
 

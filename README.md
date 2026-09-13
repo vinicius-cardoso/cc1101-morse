@@ -7,31 +7,28 @@ Press the key. The device times your dots and dashes, sounds a sidetone so you
 hear what you send, keys the CC1101 in step, and prints the decoded letter over
 serial. Point a second one at it and the two talk to each other.
 
-This is the stripped-down sibling of [Sparks](../sparks) — same key, same
-sidetone, same Morse tree, but **no LED panel and no MAX7219**. What is left is
-the radio, and that lets the board be **single-layer, through-hole only**.
+The design goal is a board simple enough to make at home: **single layer,
+through-hole only, no jumper wires**. There is no display — output is the buzzer
+and the serial monitor — and that constraint is what keeps everything else
+small.
 
-## Why it is simpler
+## Why it is simple
 
-Sparks' 26-LED panel is what forced a double-sided board: the matrix is organised
-by tree *level* while the panel is organised by tree *geometry*, and those two
-organisations need about 56 crossings to reconcile. Remove the panel and the
-whole conflict disappears — what remains is one module, one socket, a button and
-a buzzer, which routes on a single face with no jumpers.
+What the board carries is one module, one socket, a button and a buzzer. Eight
+parts, none of them surface-mount, twelve nets. That routes on a single face
+with no crossings to resolve.
 
-The consequences are worth stating plainly, because they are the point of this
-board:
-
-| | Sparks | CC1101 Morse |
-|---|---|---|
-| Layers | 2, with vias | **1** |
-| Parts to place | 35 | **8** |
-| SMD parts | 29 | **0** |
-| Jumper wires | 0 (vias instead) | **0** |
-| Display | 26-LED tree panel | serial + buzzer |
+| | |
+|---|---|
+| Layers | **1** |
+| Parts to place | **8** |
+| SMD parts | **0** |
+| Jumper wires | **0** |
+| Display | serial + buzzer |
 
 Zero SMD means the board can be hand-soldered from the underside with a plain
-iron, and the fiber laser only ever etches one face — no two-sided registration.
+iron, and the fiber laser only ever etches one face — no two-sided
+registration.
 
 ## Hardware
 
@@ -42,10 +39,9 @@ iron, and the fiber laser only ever etches one face — no two-sided registratio
 | Momentary key | Morse input |
 | Passive buzzer | sidetone on transmit, audio on receive |
 
-Everything runs at **3.3 V**. This is the other thing the panel was costing: the
-MAX7219 is a 5 V part, so Sparks needed a boost converter and, probably, a level
-shifter. The CC1101 is natively 3.3 V, matching the ESP32-C3, so the supply is
-just the Supermini's onboard regulator.
+Everything runs at **3.3 V**. The CC1101 is natively 3.3 V and so is the
+ESP32-C3, so the supply is just the Supermini's onboard regulator — no boost
+converter, no level shifter, no charge circuit.
 
 ### Pin budget — 8 of 13 GPIOs
 

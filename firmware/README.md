@@ -50,22 +50,13 @@ message buffer are all written once.
   radio.cpp ──┘
 ```
 
-## What is carried from Sparks
+## Why the event type has its own header
 
-`key.cpp` and `morse_tree.h`'s tree are essentially verbatim from
-[Sparks](../../sparks), **including the pin assignments** — the key is on GPIO10
-and the buzzer on GPIO20 on both boards. That is deliberate: a fix to the
-debouncing can be copied across without reading it carefully first.
-
-What changed:
-
-- `KeyEvent` became `MorseEvent` in its own header, because the radio produces
-  them too.
-- `morse_tree.h` lost the LED addressing table (`MORSE_NODE_LED`) — there is no
-  panel — and gained digits, for sending a call sign.
-- `sidetone` gained a second pitch and an owner, so your keying and an incoming
-  signal cannot fight over the buzzer.
-- `panel.{h,cpp}` is gone entirely. `decoder.{h,cpp}` and `radio.{h,cpp}` are new.
+`morse_event.h` holds nothing but an enum, which looks like over-organisation
+until you notice it is what lets `key.cpp` and `radio.cpp` stay strangers to
+each other. Neither includes the other; both include the vocabulary. Putting
+`MorseEvent` inside `key.h` would have made the radio depend on the key for no
+reason other than where the type happened to be declared.
 
 ## Things worth knowing before changing it
 

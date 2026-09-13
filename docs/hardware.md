@@ -64,10 +64,9 @@ packet format* and `RADIO_RX_MIN_MARK_MS` in `firmware/cc1101-morse/radio.h`.
 Until then it is configured three-state (`0x2E`) and held as an input on the
 ESP32-C3 side, so neither chip drives it.
 
-The key (GPIO10) and buzzer (GPIO20) match Sparks exactly, so `key.cpp` and
-`sidetone.cpp` move between the two boards without re-mapping. The CC1101 lines
-no longer match — they were reassigned for routing, which is harmless because
-they are bit-banged on both boards.
+The CC1101 lines were assigned by the router rather than by hand — see
+`docs/decisions.md` §9. That is harmless because every SPI line here is
+bit-banged, so no pin is special.
 
 GPIO8/GPIO9 are the strapping pins and the I²C defaults, and they stayed free
 even though using them would have given a shorter route: the crossing-free search
@@ -87,11 +86,9 @@ regulator. Plug it in and the board runs.
 | `+3V3` | Supermini onboard regulator | CC1101, buzzer, key pull-up |
 | `GND` | — | everything |
 
-This is a genuine simplification rather than a deferral, and it follows directly
-from dropping the MAX7219. Sparks needed 5 V *only* for that chip, and needing
-5 V from a 3.7 V cell meant a boost converter, which meant the HW-357 module, a
-trimmer that ships uncalibrated and can destroy the board if it is not set first,
-and a ~35% efficiency tax on battery life. None of that exists here.
+This is a genuine simplification rather than a deferral. Nothing on the board
+wants more than 3.3 V, so there is no second rail to generate and no converter
+to calibrate — the two failure modes that a mixed-voltage supply brings with it.
 
 ### Battery pads (J3, unpopulated)
 
@@ -105,11 +102,10 @@ A 2-pin header brings `VIN` and `GND` out to the board edge:
 To go portable later: a LiPo cell and a TP4056 charge module wire to these two
 pins and nothing else changes. The CC1101 and ESP32-C3 are both 3.3 V, so a
 3.7 V cell feeds `VIN` directly and the onboard regulator handles it — **no
-boost converter**, which is the part of Sparks' power chain that caused all the
-trouble.
+boost converter needed**.
 
-If that happens, add a resistor divider into a spare ADC pin (GPIO21 is already
-free and was Sparks' battery sense) for a charge readout. Not on the board now:
+If that happens, add a resistor divider into a spare ADC pin (GPIO21 is free)
+for a charge readout. Not on the board now:
 an unpopulated divider is two more parts and two more traces for a feature that
 does nothing while the board runs on USB.
 
@@ -129,8 +125,8 @@ There is no battery, so this only sizes the USB draw.
 
 Any USB port supplies this without thinking about it. Worth recording because it
 sets the cell size *if* the battery option is ever taken: 85 mA worst case means
-a 1000 mAh cell runs roughly 12 hours — and unlike Sparks there is no boost
-converter eating 35% of it, so that number is real rather than derated.
+a 1000 mAh cell runs roughly 12 hours. With no boost converter in the chain that
+figure is real rather than derated.
 
 ## OOK and why there is no packet format
 
@@ -233,10 +229,10 @@ some ship with female headers instead.
 | 7 | GDO0 | GPIO0 |
 | 8 | CSN | GPIO1 |
 
-Taken from the silkscreen of the module in hand. **Sparks wires a different
-order** (GND on 1, VCC on 2, SCK before MOSI) — its module is a different
-revision. Do not copy one board's table onto the other; read the silkscreen of
-the module you are actually plugging in.
+Taken from the silkscreen of the module in hand. **Other CC1101 modules number
+these differently** — GND on pin 1 and SCK before MOSI is also common. Do not
+copy a table from elsewhere; read the silkscreen of the module you are actually
+plugging in.
 
 Getting the supply pair backwards destroys the module, and on an etched board
 that is not recoverable.
@@ -253,10 +249,10 @@ that is not recoverable.
 driven with. An **active** buzzer contains its own oscillator and plays one fixed
 note whenever it has power — it ignores `tone()` entirely.
 
-This matters more here than it did on Sparks, because the buzzer is now the only
-real-time output the device has. It carries the sidetone on transmit *and* the
-received signal on receive, and being able to shift pitch between the two is what
-makes it possible to tell them apart by ear.
+This matters because the buzzer is the only real-time output the device has. It
+carries the sidetone on transmit *and* the received signal on receive, and being
+able to shift pitch between the two is what makes it possible to tell them apart
+by ear.
 
 | Direction | Pitch | Why |
 |---|---|---|
@@ -311,12 +307,10 @@ a generic connector sized to its pin count:
 | Battery header | `Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical` |
 | Decoupling cap | `Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm` |
 
-**Nothing is SMD.** Sparks used 0805 parts throughout because 26 LEDs had to sit
-flush against an engraved panel; without the panel there is no reason to. Every
-part here is a through-hole part soldered from the underside, which is the
-easiest possible assembly and matches the single-layer constraint — through-hole
-joints on a one-sided board are soldered on the side *without* the components,
-so there is nothing to work around.
+**Nothing is SMD.** Every part here is through-hole and soldered from the
+underside, which is the easiest possible assembly and matches the single-layer
+constraint — through-hole joints on a one-sided board are soldered on the side
+*without* the components, so there is nothing to work around.
 
 ## Single-layer routing
 
@@ -387,12 +381,11 @@ class, no routing cost.
 
 Copper engraved with a fiber laser. Relevant consequences:
 
-- **One face only.** Sparks needed two-sided etching with registration between
-  the faces, and alignment holes to achieve it. Here there is nothing on the
-  back, so the board goes on the laser once and comes off finished.
-- **Trace count is low** — roughly 12 nets against Sparks' 13 plus 26 LED
-  connections. Every trace is engraving time and a potential defect, so this is
-  a real reduction in both.
+- **One face only.** There is nothing on the back, so the board goes on the
+  laser once and comes off finished — no two-sided registration, no alignment
+  holes.
+- **Trace count is low** — twelve nets, and ground is a pour rather than traces.
+  Every trace is engraving time and a potential defect.
 - **2.54 mm pitch everywhere.** Every part is a through-hole header, switch or
   buzzer, all on a 2.54 mm or wider grid. That sidesteps needing to characterise
   the laser's minimum trace/space entirely — any fiber laser holds this

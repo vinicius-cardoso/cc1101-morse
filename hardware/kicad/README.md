@@ -1,10 +1,10 @@
 # KiCad
 
-**Empty on purpose.** Put the KiCad project here — `cc1101-morse/` alongside
-`libraries/`, matching the Sparks layout.
+The KiCad project lives in `cc1101-morse/`, alongside `libraries/`.
 
-`libraries/` already holds the ESP32-C3 Supermini symbol and footprint, copied
-from Sparks. Nothing else is needed from a custom library: the CC1101 is a
+`libraries/` holds the ESP32-C3 Supermini symbol and footprint, which the stock
+KiCad libraries do not carry. Nothing else is needed from a custom library: the
+CC1101 is a
 socketed module represented by a generic `Conn_02x04_Odd_Even`, and everything
 else is a stock KiCad part.
 
