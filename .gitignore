@@ -15,7 +15,9 @@ _autosave-*
 
 # KiCad generated output (keep sources, not derivatives)
 gerbers/
+exports/
 *.drl
+*.dxf
 *.gbr
 *.gbrjob
 *.net

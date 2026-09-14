@@ -69,7 +69,9 @@ Single layer, through-hole only. See `docs/hardware.md` § Single-layer routing.
       against every net it touches — DRC is meaningless until this is done.
 - [ ] Check no trace runs through a mounting hole. The autorouter could not read
       the holes' keepout areas, so it routed without knowing they exist.
-- [ ] Engrave, drill, populate, test.
+- [ ] Export DXF for the laser — `docs/fabrication.md`. **Watch the polarity:**
+      the copper layer is what must *remain*, and a laser removes what it marks.
+- [ ] Engrave, drill (38 holes, five sizes), populate, test.
 
 ## Phase 4 — on the air
 

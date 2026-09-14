@@ -124,7 +124,8 @@ Four M3 mounting holes, one per corner. Board is 40 × 60 mm.
 
 ## Toolchain
 
-- **KiCad** for the PCB (`hardware/kicad/`)
+- **KiCad** for the PCB (`hardware/kicad/`), exported to DXF for the laser —
+  see `docs/fabrication.md`
 - **Onshape** for the case, exported to `mechanical/`
 - **Fiber laser** to engrave the copper
 - **Arduino** for firmware (`firmware/cc1101-morse/`)
