@@ -50,17 +50,22 @@
 
 // Pins — see docs/hardware.md
 //
-// These are chosen by the PCB layout, not by the chip: every SPI
-// line here is bit-banged, so any GPIO will do and the assignment
-// is free to be whatever routes best. It was picked by searching
-// for the mapping with no crossing traces — the board is single
-// layer, so a crossing means a trace that cannot be routed at all.
-// See docs/decisions.md §9.
-#define RADIO_PIN_MOSI   6
-#define RADIO_PIN_SCK    5
-#define RADIO_PIN_MISO   2
-#define RADIO_PIN_CS     1
-#define RADIO_PIN_GDO0   0
+// These follow the PCB, not the chip: every SPI line here is
+// bit-banged, so any GPIO will do. The board's socket wiring was
+// chosen to route without crossings on a single layer, and the
+// module's own pinout then decides which function lands on which
+// GPIO. Both constraints are physical; this table is what falls
+// out of them. See docs/decisions.md §9 and §12.
+//
+// Socket pad -> module function -> GPIO the board wires there:
+//   3  GDO0  GPIO5      6  MOSI  GPIO2
+//   4  CSN   GPIO6      7  MISO  GPIO1
+//   5  SCK   GPIO7      8  GDO2  GPIO0
+#define RADIO_PIN_MOSI   2
+#define RADIO_PIN_SCK    7
+#define RADIO_PIN_MISO   1
+#define RADIO_PIN_CS     6
+#define RADIO_PIN_GDO0   5
 
 // GDO2 is the second configurable status pin. Nothing in the
 // firmware needs it yet — keying and carrier detection both run
@@ -80,7 +85,7 @@
 //          measuring the crystal.
 //
 // Set RADIO_GDO2_CFG to one of those to have begin() apply it.
-#define RADIO_PIN_GDO2   7
+#define RADIO_PIN_GDO2   0
 
 // 0x2E = three-state, the safe default: the chip drives nothing
 // and the pin floats as an unused input.

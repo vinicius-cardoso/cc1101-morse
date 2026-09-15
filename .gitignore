@@ -12,6 +12,7 @@ _autosave-*
 
 # KiCad 10 autosave store — its own git repo, generated state, not source
 .history/
+_restore_backup_*/
 
 # KiCad generated output (keep sources, not derivatives)
 gerbers/

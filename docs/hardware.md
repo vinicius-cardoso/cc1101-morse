@@ -211,21 +211,25 @@ wrong one means a board that is etched and drilled but will not accept the part:
 Check the module in hand rather than trusting this table: revisions vary, and
 some ship with female headers instead.
 
-| Socket pin | CC1101 | ESP32-C3 |
+| Socket pad | CC1101 | ESP32-C3 |
 |---|---|---|
-| 1 | VCC | `+3V3` |
-| 2 | GND | `GND` |
-| 3 | MOSI | GPIO6 |
-| 4 | SCK | GPIO5 |
-| 5 | MISO/GDO1 | GPIO2 |
-| 6 | GDO2 | GPIO7 — wired, unused |
-| 7 | GDO0 | GPIO0 |
-| 8 | CSN | GPIO1 |
+| 1 | GND | `GND` |
+| 2 | VCC | `+3V3` |
+| 3 | GDO0 | GPIO5 |
+| 4 | CSN | GPIO6 |
+| 5 | SCK | GPIO7 |
+| 6 | MOSI | GPIO2 |
+| 7 | MISO/GDO1 | GPIO1 |
+| 8 | GDO2 | GPIO0 — wired, unused |
 
-Taken from the silkscreen of the module in hand. **Other CC1101 modules number
-these differently** — GND on pin 1 and SCK before MOSI is also common. Do not
-copy a table from elsewhere; read the silkscreen of the module you are actually
-plugging in.
+**This is the module's own numbering**, taken from its datasheet — GND on pin 1,
+VCC on pin 2, then GDO0, CSN, SCK, MOSI, MISO, GDO2. Not every CC1101 board
+numbers them this way; read the silkscreen of the one you are plugging in.
+
+The GPIO column is a consequence, not a choice. The board's traces were routed
+for a crossing-free single layer, and the module's pinout then decides which
+function arrives at which GPIO. Since every SPI line is bit-banged, the firmware
+simply names them to match — see `docs/decisions.md` §12.
 
 Getting the supply pair backwards destroys the module, and on an etched board
 that is not recoverable.

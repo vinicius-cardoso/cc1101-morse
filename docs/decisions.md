@@ -234,6 +234,34 @@ finished board works without recompiling anything.
 have a display, and a dependency on two Adafruit libraries. `DISPLAY_ENABLE 0`
 removes both if that ever matters.
 
+## 12. The socket follows the module's pinout, and the firmware follows the socket
+
+**Decision:** `J1`'s pads carry GND, VCC, GDO0, CSN, SCK, MOSI, MISO, GDO2 in
+that order — the CC1101 module's own numbering — and `radio.h` names whichever
+GPIO reaches each pad accordingly.
+
+**Why this needed deciding at all:** the board was first drawn with a different
+pin order, guessed rather than read off the module. Two things were wrong. The
+supply pair was reversed, so plugging a module into the board would have applied
++3V3 to its GND pin. And all six signals were offset, so nothing would have
+talked even if the module survived.
+
+It was caught on the breadboard, where `status` reported
+`PARTNUM 0xFF VERSION 0xFF` — MISO stuck high, the signature of a module that is
+not driving the bus.
+
+**Why the fix was cheap:** the SPI is bit-banged (`radio.cpp`, `transfer_()`), so
+no pin is special. Once the socket matches the module, the firmware is six
+`#define` lines. Nothing was re-routed for the signals.
+
+The power pair was different — `+3V3` and `GND` are physical rails and cannot be
+remapped in software, so that pair did need fixing on the board.
+
+**The rule worth keeping:** read the pinout off the module in hand, not off a
+datasheet found elsewhere, and get it into the schematic before routing. This
+cost a full re-check of the board late, and would have cost a destroyed module
+had it reached copper.
+
 ## Open items
 
 - **ANATEL limits** for 433 MHz short-range transmission in Brazil. Not
