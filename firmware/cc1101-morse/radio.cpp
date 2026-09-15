@@ -312,6 +312,16 @@ void Radio::keyUp() {
 MorseEvent Radio::poll() {
   if (mode_ != RADIO_MODE_RX) return MORSE_NONE;
 
+  // No module on the bus means GDO0 is an unconnected input, and
+  // an unconnected input is an antenna: it picks up noise and
+  // toggles. Timing that produces a stream of fictional symbols,
+  // each of which the rest of the firmware treats as real — which
+  // is expensive enough to starve the loop.
+  //
+  // present_ is false when begin() got no answer from the chip.
+  // Nothing to listen to, so do not listen.
+  if (!present_) return MORSE_NONE;
+
   uint32_t now = millis();
 
 #if RADIO_SIMULATE

@@ -58,6 +58,20 @@
 // How much of the message tail to keep on screen
 #define DISPLAY_LINE_CHARS 21   // 128 px / 6 px per char
 
+// ------------------------------------------------------------
+// Minimum gap between physical redraws.
+//
+// render() pushes the whole 1 KB framebuffer over I2C, which at
+// 400 kHz takes roughly 20 ms. Calling it per event is fine when
+// events are dots and dashes from a hand; it is fatal when they
+// arrive from a floating GDO0 pin picking up noise, because the
+// redraws then starve the loop and the key is never polled.
+//
+// 50 ms is faster than an eye notices and slow enough that even a
+// pathological event rate cannot monopolise the CPU.
+// ------------------------------------------------------------
+#define DISPLAY_MIN_REDRAW_MS 50
+
 class Display {
  public:
   // Probes the bus. Returns false if no OLED answered — which
@@ -82,8 +96,19 @@ class Display {
   // Splash at startup.
   void splash(const char* line1, const char* line2);
 
-  // Push the buffer to the panel.
+  // Push the buffer to the panel, at most every
+  // DISPLAY_MIN_REDRAW_MS. Call it freely.
   void render();
+
+  // Push right now, ignoring the rate limit. For the splash and
+  // for anything that must be on screen before a blocking
+  // operation starts.
+  void renderNow();
+
+  // Call every loop: draws a frame that the rate limiter
+  // deferred. Without this a final update can be dropped and the
+  // screen left one event stale.
+  void tick();
 
  private:
   bool present_ = false;
@@ -93,6 +118,9 @@ class Display {
   char partial_[10] = "";
   char status_[DISPLAY_LINE_CHARS + 1] = "";
   MorseSource partialSrc_ = MORSE_FROM_KEY;
+
+  uint32_t lastRender_ = 0;
+  bool     dirty_      = false;
 
   // Keep only the last N chars, so a long message scrolls
   // rather than overflowing.

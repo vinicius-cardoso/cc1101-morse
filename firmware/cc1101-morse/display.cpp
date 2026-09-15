@@ -105,6 +105,8 @@ void Display::setStatus(const char* text) {
 
 void Display::splash(const char* line1, const char* line2) {
   if (!present_) return;
+  lastRender_ = millis();
+  dirty_ = false;
   panel.clearDisplay();
   panel.setTextSize(1);
   panel.setCursor(0, 8);
@@ -128,8 +130,34 @@ void Display::splash(const char* line1, const char* line2) {
 // changing while you key, and the one you glance at mid-letter.
 // ------------------------------------------------------------
 
+// ------------------------------------------------------------
+// render() marks the screen dirty and draws only if enough time
+// has passed. tick() catches whatever the limiter deferred.
+//
+// The alternative — drawing on every call — is what made a
+// floating GDO0 pin able to lock the whole device up: each noise
+// edge became a full framebuffer push, and the loop never got
+// back to polling the key.
+// ------------------------------------------------------------
+
 void Display::render() {
   if (!present_) return;
+  dirty_ = true;
+  uint32_t now = millis();
+  if (now - lastRender_ < DISPLAY_MIN_REDRAW_MS) return;
+  renderNow();
+}
+
+void Display::tick() {
+  if (!present_ || !dirty_) return;
+  if (millis() - lastRender_ < DISPLAY_MIN_REDRAW_MS) return;
+  renderNow();
+}
+
+void Display::renderNow() {
+  if (!present_) return;
+  lastRender_ = millis();
+  dirty_ = false;
 
   panel.clearDisplay();
   panel.setTextSize(1);
@@ -179,6 +207,8 @@ void Display::setMessage(const char*, const char*) {}
 void Display::setStatus(const char*) {}
 void Display::splash(const char*, const char*) {}
 void Display::render() {}
+void Display::renderNow() {}
+void Display::tick() {}
 void Display::appendTail_(char*, char) {}
 
 #endif  // DISPLAY_ENABLE

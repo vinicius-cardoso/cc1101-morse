@@ -355,7 +355,7 @@ void loop() {
   // your own transmission is never interrupted by an incoming
   // one. sidetone.on() enforces this too; checking here keeps
   // it explicit.
-  if (!key.isDown()) {
+  if (!key.isDown() && radio.present()) {
     if (radio.carrier()) {
       sidetone.on(MORSE_FROM_RADIO);
     } else {
@@ -371,4 +371,8 @@ void loop() {
       oled.showPartial(rxDecoder.partial(), MORSE_FROM_RADIO);
     }
   }
+
+  // Draw whatever the redraw limiter deferred. Without this the
+  // last update of a burst can sit undrawn until the next event.
+  oled.tick();
 }
