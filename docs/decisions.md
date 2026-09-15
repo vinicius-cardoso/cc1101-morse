@@ -23,9 +23,10 @@ For a device whose purpose is keying Morse — where the operator is listening, 
 looking — that is a smaller loss than it sounds. The buzzer carries the
 information in real time, which is how Morse is meant to be received.
 
-**Open, and cheap:** an I²C OLED on GPIO8/GPIO9 would give decoded text with two
-wires and no driver IC, because it has its own controller. That stays possible
-(see §7) and is the obvious first addition if the serial monitor proves annoying.
+**Open, and cheap:** an I²C OLED on GPIO8/GPIO9 gives decoded text with two wires
+and no driver IC, because it has its own controller. The firmware already
+supports one (`display.cpp`) — see §11. The *board* still has no footprint for
+it, which keeps §2 and §3 intact.
 
 ## 2. Through-hole only
 
@@ -202,6 +203,36 @@ faster to make than the alternative, not slower.
 must be clean. A zone that has not been refilled since the traces were laid will
 show clearance violations against every net — refill (`B`) before believing any
 DRC result.
+
+## 11. The OLED is supported in firmware but absent from the board
+
+**Decision:** `display.cpp` drives an SSD1306 on GPIO8/GPIO9, but the PCB carries
+no footprint, no connector and no I²C pull-ups for it.
+
+**Why both at once:** §1 rejected a display because of what a display *drags in*
+— a driver IC, a second voltage, a second copper layer. An I²C OLED brings none
+of that: it has its own controller, runs at 3.3 V, and costs two wires. The
+objection in §1 was never to pixels; it was to the support chain.
+
+But putting it on the board would still cost a connector, four more holes, and a
+cutout in a case that does not exist yet — for a part that is genuinely optional.
+
+So the firmware supports it and the board does not require it. On a breadboard
+you get decoded text; on the bare PCB you get the buzzer and the serial monitor,
+which is what §1 signed up for.
+
+**How absence is handled — runtime, not compile time.** `Display::begin()` probes
+0x3C once. Nothing there, and every later call returns immediately. No retry, no
+timeout, no blocking.
+
+That choice matters more than it looks. A `#define` would have meant two
+binaries, and the wrong one on the wrong board is a confusing failure. A runtime
+probe means **one firmware image runs on both**, and plugging a screen into a
+finished board works without recompiling anything.
+
+**Tradeoff accepted:** a few hundred bytes of flash on boards that will never
+have a display, and a dependency on two Adafruit libraries. `DISPLAY_ENABLE 0`
+removes both if that ever matters.
 
 ## Open items
 

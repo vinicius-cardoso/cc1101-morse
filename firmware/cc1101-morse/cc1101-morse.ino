@@ -43,6 +43,7 @@
 #include "sidetone.h"
 #include "radio.h"
 #include "decoder.h"
+#include "display.h"
 
 // ------------------------------------------------------------
 // Two decoders, one per direction. Same class, same code —
@@ -52,6 +53,24 @@
 
 static Decoder txDecoder;   // what you are sending
 static Decoder rxDecoder;   // what is coming in
+
+// ------------------------------------------------------------
+// The OLED, when one is attached.
+//
+// It mirrors what already goes to serial — nothing depends on
+// it, and on the bare PCB (which has no OLED footprint) every
+// call below is a no-op. See display.h.
+// ------------------------------------------------------------
+
+static void refreshStatus() {
+  if (!oled.present()) return;
+  char buf[24];
+  snprintf(buf, sizeof(buf), "%2u wpm  %s  %s",
+           key.wpm(),
+           radio.mode() == RADIO_MODE_TX ? "TX" : "RX",
+           radio.present() ? "RF" : "--");
+  oled.setStatus(buf);
+}
 
 // TX holds the radio while you are keying and for a moment
 // after, so the mode does not flap between every symbol. Once
@@ -115,6 +134,7 @@ static void printHelp() {
   Serial.println(F("  wpm N     set speed, fixed (disables adaptive)"));
   Serial.println(F("  auto      re-enable adaptive speed"));
   Serial.println(F("  tone      toggle the buzzer"));
+  Serial.println(F("  buzzer    sweep test: passive or active?"));
   Serial.println(F("  rx        listen (default)"));
   Serial.println(F("  quiet     stop logging received symbols"));
   Serial.println(F("  loud      log received symbols"));
@@ -131,6 +151,7 @@ static void handleLine(String& line) {
   } else if (line == "clear") {
     txDecoder.clearMessage();
     rxDecoder.clearMessage();
+    oled.setMessage("", "");
     Serial.println(F("messages cleared"));
 
   } else if (line == "auto") {
@@ -142,9 +163,13 @@ static void handleLine(String& line) {
     Serial.print(F("buzzer "));
     Serial.println(sidetone.enabled() ? F("on") : F("off"));
 
+  } else if (line == "buzzer") {
+    sidetone.sweepTest();
+
   } else if (line == "rx") {
     radio.setMode(RADIO_MODE_RX);
     txHolding = false;
+    refreshStatus();
     Serial.println(F("listening"));
 
   } else if (line == "quiet") {
@@ -183,6 +208,7 @@ static void handleLine(String& line) {
     if (w >= 3 && w <= 30) {
       key.setAdaptive(false);
       key.setUnitMs(1200 / w);
+      refreshStatus();
       Serial.print(F("fixed at "));
       Serial.print(w);
       Serial.println(F(" wpm"));
@@ -253,18 +279,26 @@ void setup() {
 
   key.begin();
   sidetone.begin();
+  oled.begin();
+  oled.splash("CC1101 Morse", "starting...");
   radio.begin();
 
   txDecoder.begin("tx | ");
   rxDecoder.begin("RX | ");
 
   radio.setMode(RADIO_MODE_RX);
+  refreshStatus();
+  oled.setMessage("", "");
 
   Serial.print(F("speed: "));
   Serial.print(key.wpm());
   Serial.print(F(" wpm (unit "));
   Serial.print(key.unitMs());
   Serial.println(F(" ms), adaptive"));
+
+  if (!oled.present()) {
+    Serial.println(F("display: none (buzzer + serial only)"));
+  }
 
   printHelp();
   Serial.println(F("ready — press the key, or type . and -"));
@@ -282,17 +316,24 @@ void loop() {
   MorseEvent kev = key.poll();
 
   if (key.isDown()) {
+    bool wasHolding = txHolding;
     radio.keyDown();
     sidetone.on(MORSE_FROM_KEY);
     lastKeyActivity = millis();
     txHolding = true;
+    if (!wasHolding) refreshStatus();   // RX -> TX
   } else {
     radio.keyUp();
     sidetone.off(MORSE_FROM_KEY);
   }
 
   if (kev != MORSE_NONE) {
-    txDecoder.feed(kev);
+    char done = txDecoder.feed(kev);
+    if (done != MORSE_NO_LETTER) {
+      oled.showLetter(done, MORSE_FROM_KEY);
+    } else {
+      oled.showPartial(txDecoder.partial(), MORSE_FROM_KEY);
+    }
     lastKeyActivity = millis();
   }
 
@@ -303,6 +344,7 @@ void loop() {
       (millis() - lastKeyActivity) > TX_HANG_MS) {
     radio.setMode(RADIO_MODE_RX);
     txHolding = false;
+    refreshStatus();
   }
 
   // --- receive side --------------------------------------------
@@ -322,6 +364,11 @@ void loop() {
   }
 
   if (rev != MORSE_NONE) {
-    rxDecoder.feed(rev);
+    char done = rxDecoder.feed(rev);
+    if (done != MORSE_NO_LETTER) {
+      oled.showLetter(done, MORSE_FROM_RADIO);
+    } else {
+      oled.showPartial(rxDecoder.partial(), MORSE_FROM_RADIO);
+    }
   }
 }

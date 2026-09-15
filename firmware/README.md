@@ -2,7 +2,11 @@
 
 Arduino sketch for the ESP32-C3 Supermini. Open
 `cc1101-morse/cc1101-morse.ino` in the Arduino IDE, select **ESP32C3 Dev
-Module**, and upload. No external libraries — the CC1101 is driven directly.
+Module**, and upload over USB.
+
+The CC1101 is driven directly — no radio library. The **optional** OLED needs
+`Adafruit_SSD1306` and `Adafruit_GFX`; if you do not have them, set
+`DISPLAY_ENABLE 0` in `display.h` and the sketch builds without them.
 
 ## It runs with nothing attached
 
@@ -28,6 +32,7 @@ Type `help` for the command list.
 | `radio.{h,cpp}` | CC1101 as an OOK carrier switch, both directions |
 | `decoder.{h,cpp}` | events in, letters out |
 | `sidetone.{h,cpp}` | the buzzer, at two pitches |
+| `display.{h,cpp}` | optional SSD1306 OLED — absent by default |
 
 ## The shape of it
 
@@ -57,6 +62,46 @@ until you notice it is what lets `key.cpp` and `radio.cpp` stay strangers to
 each other. Neither includes the other; both include the vocabulary. Putting
 `MorseEvent` inside `key.h` would have made the radio depend on the key for no
 reason other than where the type happened to be declared.
+
+## The OLED is optional, and detected at runtime
+
+The PCB has no display (`docs/decisions.md` §1), but GPIO8/GPIO9 were kept free
+so one could be wired anyway (§7). `display.cpp` serves both cases from one
+binary.
+
+**It probes rather than assumes.** `Display::begin()` does a single-address I2C
+probe at 0x3C. If nothing answers, `present_` stays false and every subsequent
+call returns immediately — no retry loop, no timeout, no blocking. The buzzer and
+serial output carry on exactly as before.
+
+That is why there are no `#ifdef`s scattered through the sketch: the no-op path
+is a runtime property of one object, not a compile-time variant of the whole
+firmware. Plugging a screen into a finished board is a thing you can just do.
+
+`DISPLAY_ENABLE 0` is a separate escape hatch, for building without the Adafruit
+libraries installed. It compiles the module down to empty stubs.
+
+**Wiring:** SDA to GPIO8, SCL to GPIO9, 3V3 and GND. Address 0x3C.
+
+## Is your buzzer passive or active?
+
+The firmware needs a **passive** buzzer — the kind that is just a piezo element
+and plays whatever `tone()` drives it with. An active buzzer has its own
+oscillator and plays one fixed note regardless, which collapses the 700 Hz and
+550 Hz sidetones into the same sound and loses the distinction between what you
+are sending and what is arriving.
+
+They look identical, and listings rarely say which is which. Type `buzzer` at
+the serial monitor:
+
+| What you hear | What you have |
+|---|---|
+| pitch climbs 400 → 1200 Hz | **passive** — correct part |
+| one steady note | **active** — wrong part |
+| silence | not wired, or wired backwards |
+
+It then plays 700 Hz and 550 Hz back to back. On a passive buzzer those are
+obviously different notes; if they sound the same, it is active.
 
 ## Things worth knowing before changing it
 

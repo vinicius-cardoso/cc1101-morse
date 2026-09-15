@@ -43,6 +43,7 @@ registration.
 | CC1101 module | 433 MHz transceiver, socketed |
 | Momentary key | Morse input |
 | Passive buzzer | sidetone on transmit, audio on receive |
+| SSD1306 OLED | *optional* — decoded text, not on the PCB |
 
 Everything runs at **3.3 V**. The CC1101 is natively 3.3 V and so is the
 ESP32-C3, so the supply is just the Supermini's onboard regulator — no boost
@@ -56,6 +57,7 @@ converter, no level shifter, no charge circuit.
 | Morse key | 1 |
 | Buzzer | 1 |
 | **Total** | **8 — 5 spare** |
+| *OLED (I²C, optional, off-board)* | *2 of the 5* |
 
 See `docs/hardware.md` for the wiring detail.
 
@@ -88,6 +90,22 @@ no battery-sense divider — the board has **zero power components**.
 Going portable later means wiring a cell and a TP4056 to the Supermini's
 `5V`/`GND` pins. Nothing else changes, because nothing on the board wants more
 than 3.3 V — so no boost converter is involved.
+
+## On the bench
+
+<p align="center">
+  <img src="media/breadboard.jpg" alt="Breadboard prototype: ESP32-C3 Supermini, CC1101 with whip antenna, SSD1306 OLED, buzzer and key" width="560">
+</p>
+
+The prototype, before the PCB exists: ESP32-C3 Supermini, the CC1101 with its
+whip screwed on, a microswitch standing in for the key, a buzzer, and an
+SSD1306 OLED on GPIO8/GPIO9.
+
+**The OLED is not on the PCB** — `docs/decisions.md` §1 chose no display, and §7
+kept those two pins free so one could be added anyway. The firmware supports it
+without requiring it: `display.cpp` probes the I2C bus at startup, and if nothing
+answers, every display call becomes a no-op. One binary runs on the breadboard
+with a screen and on the bare board without one.
 
 ## The board
 
@@ -136,18 +154,16 @@ Keep editable sources as the source of truth: `.kicad_pro`, `.kicad_sch`,
 
 ## Status
 
-**Schematic done; PCB nearly.** Routed on one layer with no vias and ground
-poured, but DRC is not clean yet — the zone needs refilling after the last
-routing pass, and two nets (VCC and MOSI) lost their connection during rework.
-See `docs/roadmap.md` phase 3. Nothing has been etched or assembled, so none of
-this has met real hardware.
+**PCB done.** Routed by hand on one layer, no vias, ground poured. DRC clean:
+0 violations, 0 unconnected, 0 schematic-parity errors. DXF and drill files are
+exported for the laser — see `docs/fabrication.md`. Not etched yet.
 
-Firmware is written and runs without a radio attached: `radio.h` defaults to
-`RADIO_SIMULATE 1`, which prints what it would transmit instead of driving the
-chip, so key timing and decoding can be exercised on a bare Supermini.
+**Firmware runs on the breadboard** (the photo above). It also runs with nothing
+attached: `radio.h` defaults to `RADIO_SIMULATE 1`, which prints what it would
+transmit instead of driving the chip.
 
-Next is phase 1 in `docs/roadmap.md` — wire the CC1101 on a breadboard and
-confirm SPI talks to it.
+Next is phase 1 in `docs/roadmap.md` — set `RADIO_SIMULATE 0` and confirm SPI
+talks to the CC1101 by reading `PARTNUM`/`VERSION`.
 
 ## Licence
 

@@ -235,6 +235,24 @@ that is not recoverable.
 > module in hand against this table before routing — getting VCC and GND crossed
 > destroys it.
 
+## The optional OLED
+
+The board has no display, but GPIO8/GPIO9 are free and the firmware drives an
+SSD1306 on them if one is present — see `docs/decisions.md` §11.
+
+| OLED pin | ESP32-C3 |
+|---|---|
+| VCC | `+3V3` |
+| GND | `GND` |
+| SDA | GPIO8 |
+| SCL | GPIO9 |
+
+Address 0x3C, 128 × 64. Most modules carry their own pull-ups; if yours does
+not, add 4.7 kΩ from each line to 3V3.
+
+Nothing on the PCB supports this — it is breadboard wiring, or flying leads to a
+finished board. The firmware probes for it at startup and carries on without it.
+
 ## The buzzer must be passive
 
 `tone()` generates a square wave at a chosen frequency. That requires a

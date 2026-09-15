@@ -57,6 +57,29 @@ class Sidetone {
   // (letter committed, mode changed).
   void blip(uint16_t freqHz, uint16_t ms);
 
+  // ----------------------------------------------------------
+  // Is the buzzer passive or active?
+  // ----------------------------------------------------------
+  //
+  // They look identical and listings rarely say. The firmware
+  // needs a PASSIVE one: an active buzzer contains its own
+  // oscillator, plays one fixed note whenever it has power, and
+  // ignores tone() entirely — which collapses the 700/550 Hz
+  // distinction that tells your keying apart from an incoming
+  // signal.
+  //
+  // This plays a rising sweep, 400 Hz to 1200 Hz. What you hear
+  // answers the question:
+  //
+  //   pitch climbs          -> PASSIVE. Correct part.
+  //   one steady note       -> ACTIVE. Wrong part; the two
+  //                            sidetone pitches will be
+  //                            indistinguishable.
+  //   silence               -> not wired, or wired backwards.
+  //
+  // Run it with the `buzzer` serial command.
+  void sweepTest();
+
  private:
   bool        enabled_  = true;
   bool        sounding_ = false;

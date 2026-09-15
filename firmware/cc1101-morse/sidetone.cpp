@@ -48,6 +48,56 @@ void Sidetone::setEnabled(bool on) {
   if (!enabled_) silence();
 }
 
+// ------------------------------------------------------------
+// Sweep 400 -> 1200 Hz so the ear can settle the passive/active
+// question in two seconds. See the comment in sidetone.h.
+// ------------------------------------------------------------
+
+void Sidetone::sweepTest() {
+  bool wasEnabled = enabled_;
+  enabled_ = true;
+  silence();
+
+  Serial.println();
+  Serial.println(F("[BUZZER] sweeping 400 -> 1200 Hz..."));
+  Serial.println(F("  pitch climbs    -> PASSIVE (correct part)"));
+  Serial.println(F("  one steady note -> ACTIVE  (wrong part)"));
+  Serial.println(F("  silence         -> not wired"));
+
+  for (uint16_t f = 400; f <= 1200; f += 20) {
+    tone(SIDETONE_PIN, f);
+    delay(25);
+  }
+  noTone(SIDETONE_PIN);
+  digitalWrite(SIDETONE_PIN, LOW);
+  sounding_ = false;
+
+  delay(300);
+
+  // Then the two real pitches back to back — on a passive
+  // buzzer these are obviously different notes, which is the
+  // property the firmware actually depends on.
+  Serial.println(F("[BUZZER] now the two sidetone pitches:"));
+  Serial.println(F("  700 Hz (your keying), then 550 Hz (received)"));
+
+  tone(SIDETONE_PIN, SIDETONE_TX_HZ);
+  delay(500);
+  noTone(SIDETONE_PIN);
+  delay(200);
+  tone(SIDETONE_PIN, SIDETONE_RX_HZ);
+  delay(500);
+  noTone(SIDETONE_PIN);
+  digitalWrite(SIDETONE_PIN, LOW);
+  sounding_ = false;
+
+  Serial.println(F("[BUZZER] if those sounded identical, it is ACTIVE."));
+  Serial.println();
+
+  enabled_ = wasEnabled;
+}
+
+// ------------------------------------------------------------
+
 void Sidetone::blip(uint16_t freqHz, uint16_t ms) {
   if (!enabled_) return;
 
