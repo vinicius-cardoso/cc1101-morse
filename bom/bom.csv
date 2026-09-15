@@ -4,8 +4,9 @@ U2,1,CC1101 module V2.0,433 MHz,module + SMA socket,RF transceiver — OOK TX an
 J1,1,Pin socket 2x4 female,2.54mm,PinSocket_2x04_P2.54mm_Vertical,CC1101 module socket,to buy,"FEMALE socket on the PCB — the module has MALE pins and plugs down into it. NOT PinHeader: different drill size, will not fit. Symbol: Conn_02x04_Odd_Even (generic — no dedicated CC1101 symbol needed)"
 SW1,1,Tactile switch 6x6mm,,"SW_PUSH_6mm (THT, 4-pin)",Morse key,to buy,classic 6x6 tact switch; 4 pins but only 2 nets. Pick _H5mm variant if button height matters for the case. Debounced in firmware (15ms) — no RC network on the board
 BZ1,1,Magnetic buzzer 12mm,,Buzzer_12x9.5RM7.6 (THT),sidetone on TX + audio on RX,to buy,"12mm dia, 9.5mm tall, 7.6mm pin pitch. MUST BE PASSIVE — an active buzzer has its own oscillator and ignores tone(). Two pitches are load-bearing here: 700Hz your keying, 550Hz received"
-C1,1,Capacitor,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm (THT),CC1101 supply decoupling,to buy,place close to the socket's VCC pin. Ceramic disc — through-hole to match the rest of the board
-TP1,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — 3V3,to buy,"2mm pad, 1mm drill. Takes a probe tip, a wire, or a header pin"
+C1,1,Capacitor,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm (THT),input decoupling on +5V,to buy,"steadies the USB rail feeding the Supermini's regulator. Place near U1's 5V pin"
+C2,1,Capacitor,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm (THT),CC1101 local decoupling on +3V3,to buy,"place close to J1 pin 1. The radio switches ~35mA at keying speed; this supplies that first instant locally"
+TP1,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — +5V,to buy,"2mm pad, 1mm drill. Takes a probe tip, a wire, or a header pin"
 TP2,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — GND,to buy,"scope ground, next to TP1"
 H1-H4,4,Mounting hole,M2,MountingHole_2.1mm,board mounting — one per corner,to make,"2.1mm drill = M2 clearance. Plain hole, no copper pad. M2 chosen deliberately — smaller head keeps the corners clear"
 ,1,Antenna whip,433 MHz,SMA male stub,RF,have,ships with the module; screws onto the board SMA socket. Detachable — case needs an opening. Never key the radio without it or a dummy load

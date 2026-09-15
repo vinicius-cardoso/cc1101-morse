@@ -254,6 +254,31 @@ by ear.
 
 They are set in `firmware/cc1101-morse/sidetone.h`.
 
+## Decoupling
+
+Two 100 nF ceramics, doing different jobs on different rails:
+
+| Cap | Rail | Job |
+|---|---|---|
+| `C1` | `+5V` | steadies the USB rail feeding the Supermini's regulator |
+| `C2` | `+3V3` | local reservoir for the CC1101 |
+
+**`C2` is the one that matters for the radio.** In TX the CC1101 draws ~35 mA,
+but it switches that on and off at keying speed while `radio.cpp` bit-bangs SPI
+alongside it — every mark is a step change in current. The regulator responds in
+microseconds and the trace to the socket has inductance, so `C2` supplies that
+first instant locally. Place it close to `J1` pin 1; a decoupling cap works by
+being near, and the loop area between cap, supply pin and ground is what decides
+whether it does anything.
+
+Without it the board would very likely still work at these currents. The reason
+to fit it anyway is the failure mode if it is needed and absent: intermittent
+SPI errors or the radio dropping out *only while transmitting*, which is
+unpleasant to diagnose.
+
+`C1` is not the radio's cap and never was — it sits across the input rail near
+`U1`, smoothing what arrives from USB.
+
 ## Key debounce
 
 The key is a plain tactile switch to ground with `INPUT_PULLUP`, debounced in

@@ -28,7 +28,7 @@ nets. That routes on a single face with no crossings to resolve.
 | Vias | **0** |
 | SMD parts | **0** |
 | Jumper wires | **0** |
-| Parts to solder | **7** |
+| Parts to solder | **8** |
 | Display | serial + buzzer |
 
 Zero SMD means the board can be hand-soldered from the underside with a plain
@@ -95,9 +95,9 @@ than 3.3 V — so no boost converter is involved.
   <img src="media/schematic.png" alt="Schematic: ESP32-C3 Supermini, CC1101 socket, key and buzzer" width="620">
 </p>
 
-Twelve nets and seven parts. The CC1101 plugs into `J1`; `SW1` is the key,
-`BZ1` the buzzer, `C1` the decoupling cap for the radio's supply, and `TP1`/`TP2`
-are probe points for 3V3 and ground.
+The CC1101 plugs into `J1`; `SW1` is the key and `BZ1` the buzzer. `C1`
+decouples the `+5V` input to the Supermini's regulator, `C2` the `+3V3` rail at
+the radio itself, and `TP1`/`TP2` are probe points for `+5V` and ground.
 
 <p align="center">
   <img src="media/pcb.png" alt="PCB layout: single layer, through-hole, ground pour" width="400">
