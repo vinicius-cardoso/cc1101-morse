@@ -254,8 +254,10 @@ SSD1306 on them if one is present — see `docs/decisions.md` §11.
 Address 0x3C, 128 × 64. Most modules carry their own pull-ups; if yours does
 not, add 4.7 kΩ from each line to 3V3.
 
-Nothing on the PCB supports this — it is breadboard wiring, or flying leads to a
-finished board. The firmware probes for it at startup and carries on without it.
+**The board now carries headers for it:** `J3` brings GPIO8/GPIO9 out, and `J2`
+brings `+3V3` and `GND`. Four pins, and an OLED plugs straight in. The firmware
+probes for it at startup and carries on without it, so leaving both unpopulated
+costs nothing.
 
 ## The buzzer must be passive
 
