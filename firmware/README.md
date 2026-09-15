@@ -4,6 +4,20 @@ Arduino sketch for the ESP32-C3 Supermini. Open
 `cc1101-morse/cc1101-morse.ino` in the Arduino IDE, select **ESP32C3 Dev
 Module**, and upload over USB.
 
+> [!IMPORTANT]
+> **Set `USB CDC On Boot` to `Enabled`.** It is *disabled* by default, and with
+> it off `Serial` goes to the UART pins instead of the USB port — the sketch
+> runs, prints into the void, and the serial monitor shows nothing at all. Every
+> diagnostic in this firmware is a serial command, so without it you are blind.
+>
+> From the command line that is:
+> ```sh
+> arduino-cli compile --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc \
+>   --libraries ~/hardware/arduino/libraries cc1101-morse
+> arduino-cli upload -p /dev/ttyACM0 \
+>   --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc cc1101-morse
+> ```
+
 The CC1101 is driven directly — no radio library. The **optional** OLED needs
 `Adafruit_SSD1306` and `Adafruit_GFX`; if you do not have them, set
 `DISPLAY_ENABLE 0` in `display.h` and the sketch builds without them.
