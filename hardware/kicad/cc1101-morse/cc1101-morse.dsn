@@ -24,6 +24,8 @@
       (path pcb 0  170000 -130500  130000 -130500  130000 -70500  170000 -70500
             170000 -130500)
     )
+    (plane GND (polygon F.Cu 0  130500 -71000  169500 -71000  169500 -130000  130500 -130000
+            130500 -71000))
     (via "Via[0-1]_600:300_um")
     (rule
       (width 400)
@@ -33,23 +35,29 @@
   )
   (placement
     (component Buzzer_Beeper:Buzzer_12x9.5RM7.6
-      (place BZ1 157700 -83000 front 0 (PN Buzzer))
+      (place BZ1 157700 -86000 front 0 (PN Buzzer))
+    )
+    (component MountingHole:MountingHole_2.1mm
+      (place H3 133000 -127500 front 0 (PN MountingHole_2.1mm))
+      (place H4 167000 -127500 front 0 (PN MountingHole_2.1mm))
+      (place H1 133000 -73500 front 0 (PN MountingHole_2.1mm))
+      (place H2 167000 -73500 front 0 (PN MountingHole_2.1mm))
     )
     (component TestPoint:TestPoint_THTPad_2.0x2.0mm_Drill1.0mm
-      (place TP1 139000 -83000 front 0 (PN +5V))
-      (place TP2 144000 -83000 front 0 (PN GND))
+      (place TP1 139000 -86000 front 0 (PN +5V))
+      (place TP2 144000 -86000 front 0 (PN GND))
     )
     (component Button_Switch_THT:SW_PUSH_6mm
-      (place SW1 146500 -114500 front 0 (PN SW_Push))
+      (place SW1 146500 -117500 front 0 (PN SW_Push))
     )
     (component Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm
-      (place C1 139000 -88500 front 0 (PN C))
+      (place C1 139000 -91500 front 0 (PN C))
     )
     (component "ESP32-C3-SuperMini:ESP32-C3-SuperMini"
-      (place U1 150000 -100500 front 90 (PN "ESP32-C3-SuperMini"))
+      (place U1 150000 -103500 front 90 (PN "ESP32-C3-SuperMini"))
     )
     (component Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical
-      (place J1 145880 -73500 front 90 (PN Conn_02x04_Odd_Even))
+      (place J1 145880 -76000 front 90 (PN Conn_02x04_Odd_Even))
     )
   )
   (library
@@ -124,6 +132,34 @@
             9722.3 962.468  9780.54 482.799  9800 0))
       (pin Rect[A]Pad_2000.000000x2000.000000_um 1 0 0)
       (pin Round[A]Pad_2000.000000_um 2 7600 0)
+    )
+    (image MountingHole:MountingHole_2.1mm
+      (outline (polygon signal 0  457.972 2302.41  754.588 2222.93  1038.27 2105.42  1304.2 1951.89
+            1547.82 1764.95  1764.95 1547.82  1951.88 1304.2  2105.42 1038.28
+            2222.93 754.589  2302.4 457.973  2342.49 153.493  2345 0  2342.49 -153.492
+            2302.4 -457.972  2222.93 -754.588  2105.42 -1038.27  1951.88 -1304.2
+            1764.95 -1547.82  1547.82 -1764.95  1304.2 -1951.88  1038.27 -2105.42
+            754.588 -2222.93  457.972 -2302.4  153.536 -2342.48  -153.536 -2342.48
+            -457.973 -2302.4  -754.589 -2222.93  -1038.28 -2105.42  -1304.2 -1951.88
+            -1547.82 -1764.95  -1764.95 -1547.82  -1951.89 -1304.2  -2105.42 -1038.27
+            -2222.93 -754.588  -2302.41 -457.972  -2342.48 -153.535  -2342.48 153.536
+            -2302.41 457.973  -2222.93 754.589  -2105.42 1038.28  -1951.89 1304.2
+            -1764.95 1547.82  -1547.82 1764.95  -1304.2 1951.89  -1038.28 2105.42
+            -754.589 2222.93  -457.973 2302.41  -153.536 2342.48  153.536 2342.48))
+      (outline (path signal 150  2100 0  2081.26 -279.903  2025.38 -554.81  1933.37 -819.817
+            1806.84 -1070.19  1648.08 -1301.47  1459.9 -1509.53  1245.68 -1690.65
+            1009.22 -1841.6  754.756 -1959.68  486.822 -2042.79  210.201 -2089.45
+            -70.171 -2098.83  -349.292 -2070.75  -622.179 -2005.71  -883.963 -1904.89
+            -1129.97 -1770.07  -1355.82 -1603.67  -1557.47 -1408.65  -1731.33 -1188.49
+            -1874.29 -947.121  -1983.81 -688.852  -2057.92 -418.291  -2095.31 -140.265
+            -2095.31 140.265  -2057.92 418.291  -1983.81 688.852  -1874.29 947.121
+            -1731.33 1188.49  -1557.47 1408.65  -1355.82 1603.67  -1129.97 1770.07
+            -883.963 1904.89  -622.179 2005.71  -349.292 2070.75  -70.171 2098.83
+            210.201 2089.45  486.822 2042.79  754.756 1959.68  1009.22 1841.6
+            1245.68 1690.65  1459.9 1509.53  1648.08 1301.47  1806.84 1070.19
+            1933.37 819.817  2025.38 554.81  2081.26 279.903  2100 0))
+      (keepout "" (circle F.Cu 2600))
+      (keepout "" (circle B.Cu 2600))
     )
     (image TestPoint:TestPoint_THTPad_2.0x2.0mm_Drill1.0mm
       (outline (polygon signal 0  1495 -1495  -1495 -1495  -1495 1495  1495 1495))
@@ -273,17 +309,23 @@
     (net "Net-(J1-Pin_8)"
       (pins U1-2 J1-8)
     )
-    (net "Net-(J1-Pin_3)"
-      (pins U1-10 J1-3)
+    (net "Net-(J1-Pin_5)"
+      (pins U1-3 J1-5)
+    )
+    (net "unconnected-(U1-GPIO3-Pad4)"
+      (pins U1-4)
+    )
+    (net "unconnected-(U1-GPIO4-Pad5)"
+      (pins U1-5)
+    )
+    (net "Net-(J1-Pin_1)"
+      (pins U1-6 J1-1)
     )
     (net "Net-(J1-Pin_4)"
       (pins U1-9 J1-4)
     )
-    (net "Net-(J1-Pin_5)"
-      (pins U1-3 J1-5)
-    )
-    (net "Net-(J1-Pin_1)"
-      (pins U1-6 J1-1)
+    (net "Net-(J1-Pin_3)"
+      (pins U1-10 J1-3)
     )
     (net "Net-(J1-Pin_6)"
       (pins U1-11 J1-6)
@@ -296,12 +338,6 @@
     )
     (net "unconnected-(U1-GPIO21-Pad16)"
       (pins U1-16)
-    )
-    (net "unconnected-(U1-GPIO4-Pad5)"
-      (pins U1-5)
-    )
-    (net "unconnected-(U1-GPIO3-Pad4)"
-      (pins U1-4)
     )
     (class kicad_default +5V GND "Net-(BZ1-+)" "Net-(J1-Pin_1)" "Net-(J1-Pin_3)"
       "Net-(J1-Pin_4)" "Net-(J1-Pin_5)" "Net-(J1-Pin_6)" "Net-(J1-Pin_7)"
@@ -317,6 +353,5 @@
     )
   )
   (wiring
-    (wire (path F.Cu 400  144000 -88500  143650 -88850)(net GND)(type route))
   )
 )
