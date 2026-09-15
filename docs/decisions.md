@@ -41,7 +41,7 @@ wires and no driver IC, because it has its own controller. That stays possible
   prerequisite for starting.
 - **Serviceability.** Parts can be desoldered and replaced with a plain iron.
 
-**Tradeoff accepted:** a larger board, and ~34 holes to drill. Both are cheap
+**Tradeoff accepted:** a larger board, and 40 holes to drill. Both are cheap
 here — the board is sized by the Supermini and the CC1101 module, not by the
 passives, so going SMD would not shrink it much.
 

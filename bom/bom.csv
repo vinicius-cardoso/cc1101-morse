@@ -11,5 +11,5 @@ TP2,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — GND,to b
 H1-H4,4,Mounting hole,M2,MountingHole_2.1mm,board mounting — one per corner,to make,"2.1mm drill = M2 clearance. Plain hole, no copper pad. M2 chosen deliberately — smaller head keeps the corners clear"
 ,1,Antenna whip,433 MHz,SMA male stub,RF,have,ships with the module; screws onto the board SMA socket. Detachable — case needs an opening. Never key the radio without it or a dummy load
 ,1,Dummy load 50 ohm,,SMA male,bench testing without emitting,to buy,REQUIRED before any transmit test. Use until ANATEL limits are settled — see docs/roadmap.md phase 4
-,1,PCB,,,main board,to make,fiber-laser engraved copper. SINGLE LAYER — one face only, no two-sided registration. ~34 holes, all 0.8-1.0mm
+,1,PCB,,,main board,to make,fiber-laser engraved copper. SINGLE LAYER — one face only, no two-sided registration. 40 holes, 0.8-2.1mm
 ,1,Enclosure,,,case,to make,Onshape; exports to mechanical/

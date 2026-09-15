@@ -43,7 +43,7 @@ The flags that matter:
 |---|---|
 | `copper-F_Cu.dxf` | **engrave** — the copper to remove |
 | `outline-Edge_Cuts.dxf` | **cut** the 40 × 60 mm board out, or scribe it for snapping |
-| `cc1101-morse.drl` + `-drl_map.dxf` | **drill** — 38 holes |
+| `cc1101-morse.drl` + `-drl_map.dxf` | **drill** — 40 holes |
 
 ## Polarity: the laser removes what it marks
 
@@ -81,11 +81,11 @@ thickness, and the laminate.
 
 ## Drill sizes
 
-38 holes in five sizes:
+40 holes in five sizes:
 
 | Size | Count | What |
 |---|---|---|
-| 0.80 mm | 2 | |
+| 0.80 mm | 4 | C1, C2 |
 | 0.84 mm | 16 | CC1101 socket (`J1`) |
 | 1.00 mm | 12 | test points, headers |
 | 1.10 mm | 4 | tact switch (`SW1`) |
