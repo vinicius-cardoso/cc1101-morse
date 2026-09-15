@@ -91,8 +91,21 @@ static void sendString(const char* s) {
 
   radio.setMode(RADIO_MODE_TX);
 
+  // The display has to be driven from inside this loop. sendString
+  // blocks for as long as the message takes — 30 seconds at 5 wpm —
+  // so loop() does not run and oled.tick() never gets a turn. Left
+  // to itself the screen simply freezes for the whole transmission,
+  // which looks exactly like a crash.
+  char sent[DISPLAY_LINE_CHARS + 1] = "";
+  uint8_t sentLen = 0;
+  char symbols[8];
+
   for (const char* p = s; *p; p++) {
     if (*p == ' ') {
+      if (sentLen < DISPLAY_LINE_CHARS) { sent[sentLen++] = ' '; sent[sentLen] = '\0'; }
+      oled.setMessage(sent, nullptr);
+      oled.showPartial("", MORSE_FROM_KEY);
+      oled.renderNow();
       delay(unit * 7);          // word gap
       continue;
     }
@@ -100,7 +113,14 @@ static void sendString(const char* s) {
     const char* code = morseCodeForChar(*p);
     if (!code) continue;        // silently skip punctuation
 
+    uint8_t n = 0;
     for (const char* c = code; *c; c++) {
+      // Show the symbol before sounding it, so the screen leads the
+      // buzzer rather than trailing it.
+      if (n < sizeof(symbols) - 1) { symbols[n++] = *c; symbols[n] = '\0'; }
+      oled.showPartial(symbols, MORSE_FROM_KEY);
+      oled.renderNow();
+
       radio.keyDown();
       sidetone.on(MORSE_FROM_KEY);
       delay(*c == '-' ? unit * 3 : unit);
@@ -110,10 +130,24 @@ static void sendString(const char* s) {
       delay(unit);              // symbol gap
     }
 
+    // Letter finished: commit it to the sent line and clear the
+    // symbol display.
+    if (sentLen >= DISPLAY_LINE_CHARS) {
+      memmove(sent, sent + 1, sentLen - 1);
+      sentLen--;
+    }
+    sent[sentLen++] = (*p >= 'a' && *p <= 'z') ? *p - 32 : *p;
+    sent[sentLen] = '\0';
+    oled.setMessage(sent, nullptr);
+    oled.showPartial("", MORSE_FROM_KEY);
+    oled.renderNow();
+
     delay(unit * 2);            // letter gap (1 already spent above)
   }
 
   radio.setMode(RADIO_MODE_RX);
+  refreshStatus();
+  oled.renderNow();
   Serial.println(F("TX: done"));
 }
 
