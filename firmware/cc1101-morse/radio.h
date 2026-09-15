@@ -45,7 +45,7 @@
 // Set to 0 once the module is wired up
 // ------------------------------------------------------------
 #ifndef RADIO_SIMULATE
-#define RADIO_SIMULATE 1
+#define RADIO_SIMULATE 0
 #endif
 
 // Pins — see docs/hardware.md
