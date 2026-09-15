@@ -63,7 +63,7 @@ Single layer, through-hole only. See `docs/hardware.md` § Single-layer routing.
 - [x] Route on one face. **No vias, no jumper wires.** Took a pin reassignment
       to get there — see `docs/decisions.md` §9.
 - [x] Ground as a filled zone rather than a routed net — `docs/decisions.md` §10.
-- [x] Four M3 mounting holes, one per corner. Board is 40 × 60 mm.
+- [x] Four M2 mounting holes, one per corner. Board is 40 × 60 mm.
 - [ ] **Refill the zone (`B`) and re-run DRC until clean.** A zone that has not
       been refilled since the traces were laid reports a clearance violation
       against every net it touches — DRC is meaningless until this is done.

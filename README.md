@@ -108,7 +108,7 @@ the pour filling the board rather than a routed net, which is what makes single
 layer work: the net that touches every part never has to be threaded past the
 others. See `docs/decisions.md` §10.
 
-Four M3 mounting holes, one per corner. Board is 40 × 60 mm.
+Four M2 mounting holes, one per corner. Board is 40 × 60 mm.
 
 ## Repository layout
 

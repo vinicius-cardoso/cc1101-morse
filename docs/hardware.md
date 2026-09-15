@@ -64,17 +64,13 @@ packet format* and `RADIO_RX_MIN_MARK_MS` in `firmware/cc1101-morse/radio.h`.
 Until then it is configured three-state (`0x2E`) and held as an input on the
 ESP32-C3 side, so neither chip drives it.
 
-The CC1101 lines were assigned by the router rather than by hand — see
-`docs/decisions.md` §9. That is harmless because every SPI line here is
-bit-banged, so no pin is special.
-
 GPIO8/GPIO9 are the strapping pins and the I²C defaults, and they stayed free
 even though using them would have given a shorter route: the crossing-free search
 was deliberately restricted to GPIO0–7 so an I²C peripheral — a small OLED for
 the decoded text — remains possible. GPIO3, GPIO4 and GPIO21 are spare too.
 
-Pin numbers above are a starting proposal — adjust during KiCad layout if routing
-prefers a different assignment. Only the CC1101 SPI grouping is semi-fixed.
+These are final — the board is routed against them. Changing one now means
+rewiring the schematic, re-routing, and editing `radio.h` to match.
 
 ## Power supply
 
@@ -339,13 +335,13 @@ the net that touches every part never has to be threaded past the others.
    │      │   ESP32-C3 (U1)    │      │
    │      └────────────────────┘      │
    │            ▢ SW1                 │
-   │   ⊕                          ⊕   │   ← M3 holes at corners
+   │   ⊕                          ⊕   │   ← M2 holes at corners
    └──────────────────────────────────┘
             40 × 60 mm
 ```
 
 As built: `J1` at the top edge so the module's SMA points off the board, `U1`
-centred beneath it, `SW1` below that, and the buzzer top-right. Four M3 holes
+centred beneath it, `SW1` below that, and the buzzer top-right. Four M2 holes
 at the corners.
 
 Placement rule for layout: **keep the CC1101 socket on the board edge with the

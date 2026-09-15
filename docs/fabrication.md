@@ -96,9 +96,8 @@ The drill file is Excellon, which BSLApp does not read. Either use the
 mark centre points for a drill press.
 
 > [!NOTE]
-> The mounting holes are currently **2.1 mm — M2 clearance, not M3**. If M3
-> screws are wanted, change the footprint to
-> `MountingHole:MountingHole_3.2mm_M3` and re-export.
+> The mounting holes are **2.1 mm — M2 clearance**. This is deliberate, not a
+> leftover: M2 screws keep the corner hardware small on a 40 × 60 mm board.
 
 ## Before exporting anything
 
