@@ -16,9 +16,11 @@ _restore_backup_*/
 
 # KiCad generated output (keep sources, not derivatives)
 gerbers/
-exports/
-*.drl
-*.dxf
+
+# Laser/fab output IS committed — see docs/fabrication.md. It is generated,
+# but the point of this repo is that someone can make the board, and that
+# needs the files the laser actually eats without installing KiCad first.
+# Regenerate with the commands in docs/fabrication.md after any board change.
 *.gbr
 *.gbrjob
 *.net

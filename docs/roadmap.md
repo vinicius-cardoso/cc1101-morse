@@ -71,7 +71,7 @@ Single layer, through-hole only. See `docs/hardware.md` § Single-layer routing.
       the holes' keepout areas, so it routed without knowing they exist.
 - [ ] Export DXF for the laser — `docs/fabrication.md`. **Watch the polarity:**
       the copper layer is what must *remain*, and a laser removes what it marks.
-- [ ] Engrave, drill (40 holes, five sizes), populate, test.
+- [ ] Engrave, drill (44 holes, five sizes), populate, test.
 
 ## Phase 4 — on the air
 

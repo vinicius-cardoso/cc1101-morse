@@ -42,7 +42,7 @@ it, which keeps §2 and §3 intact.
   prerequisite for starting.
 - **Serviceability.** Parts can be desoldered and replaced with a plain iron.
 
-**Tradeoff accepted:** a larger board, and 40 holes to drill. Both are cheap
+**Tradeoff accepted:** a larger board, and 44 holes to drill. Both are cheap
 here — the board is sized by the Supermini and the CC1101 module, not by the
 passives, so going SMD would not shrink it much.
 

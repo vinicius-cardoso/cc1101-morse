@@ -4,8 +4,11 @@ The laser software (BSLApp, the EZCAD family that ships with JPT/Raycus
 markers) imports **DXF**. KiCad exports DXF directly, so there is no
 intermediate tool.
 
-Everything below is generated, not source — `exports/` is gitignored apart from
-this description of how to recreate it.
+The files are committed in `hardware/kicad/cc1101-morse/exports/`. They are
+generated, not source — but the point of this repo is that the board can be
+made, and that means the laser's input should be here without needing KiCad
+installed first. **Regenerate them after any board change**, with the commands
+below.
 
 ## Generating the files
 
@@ -22,9 +25,13 @@ kicad-cli pcb export dxf --mode-single -l Edge.Cuts \
   --uc --erd --ev --ou mm --drill-shape-opt 0 \
   -o exports/outline-Edge_Cuts.dxf cc1101-morse.kicad_pcb
 
-# drill positions, plus a DXF map of them
+# drill positions
 kicad-cli pcb export drill --format excellon --excellon-units mm \
-  --generate-map --map-format dxf -o exports/ cc1101-morse.kicad_pcb
+  -o exports/ cc1101-morse.kicad_pcb
+
+# optional: a DXF picture of the hole positions, if drilling by eye.
+# Not committed — it is 300 KB and says nothing the .drl does not.
+#   ... --generate-map --map-format dxf ...
 ```
 
 The flags that matter:
@@ -43,7 +50,7 @@ The flags that matter:
 |---|---|
 | `copper-F_Cu.dxf` | **engrave** — the copper to remove |
 | `outline-Edge_Cuts.dxf` | **cut** the 40 × 60 mm board out, or scribe it for snapping |
-| `cc1101-morse.drl` + `-drl_map.dxf` | **drill** — 40 holes |
+| `cc1101-morse.drl` | **drill** — 44 holes |
 
 ## Polarity: the laser removes what it marks
 
@@ -81,19 +88,20 @@ thickness, and the laminate.
 
 ## Drill sizes
 
-40 holes in five sizes:
+44 holes in five sizes:
 
 | Size | Count | What |
 |---|---|---|
-| 0.80 mm | 4 | C1, C2 |
+| 0.80 mm | 4 | `C1`, `C2` |
 | 0.84 mm | 16 | CC1101 socket (`J1`) |
-| 1.00 mm | 12 | test points, headers |
+| 1.00 mm | 16 | test points, `J2`, `J3` |
 | 1.10 mm | 4 | tact switch (`SW1`) |
 | 2.10 mm | 4 | mounting holes (`H1`–`H4`) |
 
-The drill file is Excellon, which BSLApp does not read. Either use the
-`-drl_map.dxf` as a visual guide and drill by hand, or import the map DXF and
-mark centre points for a drill press.
+The drill file is Excellon, which BSLApp does not read — the holes are drilled
+mechanically, not lasered. If a visual guide helps, generate the map DXF with
+the commented-out flags above; it is not committed because it is 300 KB of
+picture describing what the 4 KB `.drl` already states exactly.
 
 > [!NOTE]
 > The mounting holes are **2.1 mm — M2 clearance**. This is deliberate, not a

@@ -18,9 +18,9 @@ small.
 
 ## Why it is simple
 
-What the board carries is one module on a socket, a button, a buzzer, one
-capacitor and two test points — plus the MCU. None of it surface-mount, twelve
-nets. That routes on a single face with no crossings to resolve.
+What the board carries is one module on a socket, a button, a buzzer, two
+capacitors, two test points and two breakout headers — plus the MCU. None of it
+surface-mount. That routes on a single face with no crossings to resolve.
 
 | | |
 |---|---|
@@ -28,7 +28,7 @@ nets. That routes on a single face with no crossings to resolve.
 | Vias | **0** |
 | SMD parts | **0** |
 | Jumper wires | **0** |
-| Parts to solder | **8** |
+| Parts to solder | **10** |
 | Display | serial + buzzer |
 
 Zero SMD means the board can be hand-soldered from the underside with a plain
@@ -43,7 +43,7 @@ registration.
 | CC1101 module | 433 MHz transceiver, socketed |
 | Momentary key | Morse input |
 | Passive buzzer | sidetone on transmit, audio on receive |
-| SSD1306 OLED | *optional* — decoded text, not on the PCB |
+| SSD1306 OLED | *optional* — decoded text, plugs into `J2`/`J3` |
 
 Everything runs at **3.3 V**. The CC1101 is natively 3.3 V and so is the
 ESP32-C3, so the supply is just the Supermini's onboard regulator — no boost
@@ -101,11 +101,11 @@ The prototype, before the PCB exists: ESP32-C3 Supermini, the CC1101 with its
 whip screwed on, a microswitch standing in for the key, a buzzer, and an
 SSD1306 OLED on GPIO8/GPIO9.
 
-**The OLED is not on the PCB** — `docs/decisions.md` §1 chose no display, and §7
-kept those two pins free so one could be added anyway. The firmware supports it
-without requiring it: `display.cpp` probes the I2C bus at startup, and if nothing
-answers, every display call becomes a no-op. One binary runs on the breadboard
-with a screen and on the bare board without one.
+**The OLED is optional.** `docs/decisions.md` §1 chose no display, and §7 kept
+GPIO8/GPIO9 free so one could be added anyway; the board now brings them out on
+`J3`, with power on `J2`. The firmware supports a display without requiring one:
+`display.cpp` probes the I²C bus at startup, and if nothing answers, every
+display call becomes a no-op. One binary runs with a screen and without.
 
 ## The board
 
@@ -115,7 +115,8 @@ with a screen and on the bare board without one.
 
 The CC1101 plugs into `J1`; `SW1` is the key and `BZ1` the buzzer. `C1`
 decouples the `+5V` input to the Supermini's regulator, `C2` the `+3V3` rail at
-the radio itself, and `TP1`/`TP2` are probe points for `+5V` and ground.
+the radio itself, and `TP1`/`TP2` are probe points for `+5V` and ground. `J2`
+and `J3` break out power and I²C for an optional display.
 
 <p align="center">
   <img src="media/pcb.png" alt="PCB layout: single layer, through-hole, ground pour" width="400">
@@ -149,8 +150,14 @@ Four M2 mounting holes, one per corner. Board is 40 × 60 mm.
 - **Arduino** for firmware (`firmware/cc1101-morse/`)
 
 Keep editable sources as the source of truth: `.kicad_pro`, `.kicad_sch`,
-`.kicad_pcb`, `.ino`, native CAD. Generated manufacturing output belongs in
-`exports/` directories.
+`.kicad_pcb`, `.ino`, native CAD.
+
+Generated manufacturing output lives in `exports/` and **is committed** —
+`hardware/kicad/cc1101-morse/exports/` holds the DXF and drill files the laser
+takes. They are derivatives, but a repo whose point is that you can make the
+board should carry what the machine eats, without needing KiCad installed to
+get it. Regenerate after any board change: `docs/fabrication.md` has the
+commands.
 
 ## Status
 
@@ -158,12 +165,12 @@ Keep editable sources as the source of truth: `.kicad_pro`, `.kicad_sch`,
 0 violations, 0 unconnected, 0 schematic-parity errors. DXF and drill files are
 exported for the laser — see `docs/fabrication.md`. Not etched yet.
 
-**Firmware runs on the breadboard** (the photo above). It also runs with nothing
-attached: `radio.h` defaults to `RADIO_SIMULATE 1`, which prints what it would
-transmit instead of driving the chip.
+**The radio works.** On the breadboard the CC1101 answers over SPI
+(`PARTNUM 0x0`, `VERSION 0x14`), and `send SOS SOS SOS` at 5 wpm was received on
+an RTL-SDR in AM at 433.92 MHz. Key, decoder, buzzer and OLED all confirmed.
 
-Next is phase 1 in `docs/roadmap.md` — set `RADIO_SIMULATE 0` and confirm SPI
-talks to the CC1101 by reading `PARTNUM`/`VERSION`.
+Next is phase 2 in `docs/roadmap.md` — a second unit, so two boards talk to each
+other.
 
 ## Licence
 
