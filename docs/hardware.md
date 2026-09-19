@@ -423,9 +423,21 @@ especially fussy, but a short bundle also means a short board.
 
 | Setting | Value |
 |---|---|
-| Track width | 0.4 mm |
+| Track width | 0.6 mm, dropping to 0.4 mm past `U1`'s pads |
 | Clearance | 0.4 mm |
 | Net classes | none — everything on `Default` |
+
+**Why two widths.** 0.6 mm is the default: wider copper survives laser etching
+and handling better, and the board has room for it almost everywhere.
+
+Almost. `U1`'s pads sit on a 2.54 mm grid, and a 0.6 mm track threading between
+them leaves exactly 0.30 mm to each pad — under the 0.40 mm rule. Eight short
+segments are therefore narrowed to 0.4 mm for the two or three millimetres they
+spend passing a pad, and widen again on the other side.
+
+That is the right place to give the width back. The reason for widening is
+robustness over long runs across open copper; a 2 mm stretch hemmed in by pads
+on both sides is the best-supported copper on the board.
 
 **No net classes.** They exist to give groups of nets different physical rules,
 and nothing here needs different rules: eight digital signals at Morse speeds,
