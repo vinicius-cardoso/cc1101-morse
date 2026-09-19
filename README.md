@@ -122,10 +122,13 @@ and `J3` break out power and I²C for an optional display.
   <img src="media/pcb.png" alt="PCB layout: single layer, through-hole, ground pour" width="400">
 </p>
 
-Everything is on the front copper — **no vias, no back-side traces**. Ground is
-the pour filling the board rather than a routed net, which is what makes single
-layer work: the net that touches every part never has to be threaded past the
-others. See `docs/decisions.md` §10.
+All copper is on the **back** — no vias, no front-side traces. The stock is
+single-sided, so components sit on the bare face and are soldered on the copper
+face, which is the normal way to build through-hole on one layer.
+
+Ground is the pour filling the board rather than a routed net, which is what
+makes single layer work: the net that touches every part never has to be
+threaded past the others. See `docs/decisions.md` §10.
 
 Four M2 mounting holes, one per corner. Board is 40 × 60 mm.
 
@@ -161,9 +164,10 @@ commands.
 
 ## Status
 
-**PCB done.** Routed by hand on one layer, no vias, ground poured. DRC clean:
-0 violations, 0 unconnected, 0 schematic-parity errors. DXF and drill files are
-exported for the laser — see `docs/fabrication.md`. Not etched yet.
+**PCB done.** Routed by hand on one layer, no vias, ground poured — all copper
+on the back, since the laminate is single-sided. DRC clean: 0 unconnected,
+0 parity errors. DXF and drill files are exported for the laser; see
+`docs/fabrication.md`, and **mind the mirror**. Not etched yet.
 
 **The radio works.** On the breadboard the CC1101 answers over SPI
 (`PARTNUM 0x0`, `VERSION 0x14`), and `send SOS SOS SOS` at 5 wpm was received on

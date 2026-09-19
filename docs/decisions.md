@@ -178,7 +178,7 @@ bound on what is routable.
 
 ## 10. Ground is a filled zone
 
-**Decision:** ground is a copper pour on `F.Cu`, not a routed net.
+**Decision:** ground is a copper pour on `B.Cu`, not a routed net.
 
 **Why:** ground is the net that touches everything — every part has a ground pin,
 and they sit at opposite corners of the board. Routing it on a single layer means
@@ -261,6 +261,30 @@ remapped in software, so that pair did need fixing on the board.
 datasheet found elsewhere, and get it into the schematic before routing. This
 cost a full re-check of the board late, and would have cost a destroyed module
 had it reached copper.
+
+## 13. All copper is on the back, components on the front
+
+**Decision:** traces and the ground pour live on `B.Cu`. Footprints stay on
+`F.Cu`, so component bodies sit on the front.
+
+**Why:** the laminate is single-sided — copper on one face, bare substrate on
+the other. That is not a layer *choice*, it is what the material is. The
+earlier design had copper on `F.Cu`, which describes a board whose copper is on
+the component side; no such board was going to be made.
+
+The build is the standard through-hole one: parts on the bare face, leads
+through the holes, soldered on the copper face. Nothing about the routing
+changed — the same 69 segments and the same pour, on the other side of the
+board.
+
+**Cost:** nothing electrically. Through-hole pads are defined on `*.Cu`, so they
+already existed on both layers and needed no edit.
+
+**What it does add is a way to ruin a board.** KiCad draws every layer from the
+top, so a `B.Cu` export is a view *through* the laminate. Engraving it as
+exported puts a mirrored image on the copper, and every footprint lands
+reversed. The artwork has to be flipped before it reaches the laser — see
+`docs/fabrication.md`, which carries the check for it.
 
 ## Open items
 

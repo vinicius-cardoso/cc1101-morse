@@ -5,7 +5,7 @@
 - **status** — `have` / `to buy` / `to make`
 - **notes** — anything that would otherwise be lost between sessions
 
-## Eight parts to solder
+## Ten parts to solder
 
 Plus four mounting holes. None of it is surface-mount.
 

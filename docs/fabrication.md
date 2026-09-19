@@ -15,10 +15,10 @@ below.
 From `hardware/kicad/cc1101-morse/`:
 
 ```sh
-# copper — what the laser removes
-kicad-cli pcb export dxf --mode-single -l F.Cu \
+# copper — what the laser removes. B.Cu: the copper is on the BACK.
+kicad-cli pcb export dxf --mode-single -l B.Cu \
   --uc --erd --ev --ou mm --drill-shape-opt 0 \
-  -o exports/copper-F_Cu.dxf cc1101-morse.kicad_pcb
+  -o exports/copper-B_Cu.dxf cc1101-morse.kicad_pcb
 
 # board outline — cut or scribe
 kicad-cli pcb export dxf --mode-single -l Edge.Cuts \
@@ -48,15 +48,37 @@ The flags that matter:
 
 | File | Operation |
 |---|---|
-| `copper-F_Cu.dxf` | **engrave** — the copper to remove |
+| `copper-B_Cu.dxf` | **engrave** — the copper to remove, on the back face |
 | `outline-Edge_Cuts.dxf` | **cut** the 40 × 60 mm board out, or scribe it for snapping |
 | `cc1101-morse.drl` | **drill** — 44 holes |
+
+## The copper is on the back — mind the mirror
+
+The stock is single-sided: copper on one face, bare substrate on the other.
+Components sit on the **bare** face, their leads pass through, and they are
+soldered on the **copper** face. So all copper lives on `B.Cu`, and `B.Cu` is
+what gets engraved.
+
+**KiCad draws every layer as seen from the top.** A `B.Cu` export is therefore
+a view *through* the board. When you put the copper face up on the laser bed,
+you are looking at it from the other side — so the artwork has to be
+**mirrored**, or every footprint lands reversed and nothing fits.
+
+`kicad-cli` has no mirror flag for DXF, so mirror it in BSLApp (a horizontal
+flip about the board's centre).
+
+**The cheap check that catches it:** the board is not symmetric. `J1` sits at
+the top edge and `SW1` near the bottom, and the `vinilabs.cc` silkscreen reads
+left to right. Put the exported outline and copper on screen together and look
+at any asymmetric feature — if the mirroring is wrong, text reads backwards and
+`J1` is on the wrong side. Compare against `media/pcb.png` before committing
+copper to laminate.
 
 ## Polarity: the laser removes what it marks
 
 This is the one that ruins a board if it is got backwards.
 
-`copper-F_Cu.dxf` contains the copper that must **remain** — traces, pads, and
+`copper-B_Cu.dxf` contains the copper that must **remain** — traces, pads, and
 the ground pour. A laser marks what you give it, so feeding this file directly
 would burn away exactly the copper you wanted to keep.
 
