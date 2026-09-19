@@ -28,7 +28,7 @@ surface-mount. That routes on a single face with no crossings to resolve.
 | Vias | **0** |
 | SMD parts | **0** |
 | Jumper wires | **0** |
-| Parts to solder | **10** |
+| Parts to solder | **11** |
 | Display | serial + buzzer |
 
 Zero SMD means the board can be hand-soldered from the underside with a plain
@@ -43,7 +43,7 @@ registration.
 | CC1101 module | 433 MHz transceiver, socketed |
 | Momentary key | Morse input |
 | Passive buzzer | sidetone on transmit, audio on receive |
-| SSD1306 OLED | *optional* — decoded text, plugs into `J2`/`J3` |
+| SSD1306 OLED | *optional* — decoded text, plugs into `J2` |
 
 Everything runs at **3.3 V**. The CC1101 is natively 3.3 V and so is the
 ESP32-C3, so the supply is just the Supermini's onboard regulator — no boost
@@ -103,7 +103,8 @@ SSD1306 OLED on GPIO8/GPIO9.
 
 **The OLED is optional.** `docs/decisions.md` §1 chose no display, and §7 kept
 GPIO8/GPIO9 free so one could be added anyway; the board now brings them out on
-`J3`, with power on `J2`. The firmware supports a display without requiring one:
+`J2`, a 4-pin socket a module plugs straight into. The firmware supports a
+display without requiring one:
 `display.cpp` probes the I²C bus at startup, and if nothing answers, every
 display call becomes a no-op. One binary runs with a screen and without.
 
@@ -115,8 +116,9 @@ display call becomes a no-op. One binary runs with a screen and without.
 
 The CC1101 plugs into `J1`; `SW1` is the key and `BZ1` the buzzer. `C1`
 decouples the `+5V` input to the Supermini's regulator, `C2` the `+3V3` rail at
-the radio itself, and `TP1`/`TP2` are probe points for `+5V` and ground. `J2`
-and `J3` break out power and I²C for an optional display.
+the radio itself, and `TP1`/`TP2` are probe points for `+5V` and ground. `J2` is
+a 4-pin socket for an optional display, with `TP3`/`TP4` a wire link that
+completes its `+3V3` — see `docs/decisions.md` §14.
 
 <p align="center">
   <img src="media/pcb.png" alt="PCB layout: single layer, through-hole, ground pour" width="400">

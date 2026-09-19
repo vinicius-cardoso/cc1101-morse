@@ -2,16 +2,17 @@ ref,qty,part,value,package,role,status,notes
 U1,1,ESP32-C3 Supermini,,module,MCU — timing/decoding/radio control,have,13 GPIO broken out (0-10 20 21); 3.3V native — matches CC1101 with no level shifting. Powers the board from its own USB-C
 U2,1,CC1101 module V2.0,433 MHz,module + SMA socket,RF transceiver — OOK TX and RX,have,SMA variant with detachable whip. SOCKETED not soldered — plugs into J1. CHECK SILKSCREEN PIN ORDER against docs/hardware.md before routing; varies by revision and crossing VCC/GND destroys it
 J1,1,Pin socket 2x4 female,2.54mm,PinSocket_2x04_P2.54mm_Vertical,CC1101 module socket,to buy,"FEMALE socket on the PCB — the module has MALE pins and plugs down into it. NOT PinHeader: different drill size, will not fit. Symbol: Conn_02x04_Odd_Even (generic — no dedicated CC1101 symbol needed)"
-J2,1,Pin header 1x2 male,2.54mm,PinHeader_1x02_P2.54mm_Vertical,power breakout — +3V3/GND,to buy,"feeds an off-board OLED alongside J3. Unpopulated unless a display is used"
-J3,1,Pin header 1x2 male,2.54mm,PinHeader_1x02_P2.54mm_Vertical,I2C breakout — GPIO8/GPIO9,to buy,"SDA=GPIO8 SCL=GPIO9 for an optional SSD1306. Firmware probes at startup and runs headless if absent — see docs/decisions.md §11"
+J2,1,Pin socket 1x4 female,2.54mm,PinSocket_1x04_P2.54mm_Vertical,SSD1306 display connector,to buy,"GND / +3V3 / GPIO9 (SCL) / GPIO8 (SDA). CHECK YOUR MODULE'S SILKSCREEN — SSD1306 pin order varies between VCC-first and GND-first. Unpopulated unless a display is used"
 SW1,1,Tactile switch 6x6mm,,"SW_PUSH_6mm (THT, 4-pin)",Morse key,to buy,classic 6x6 tact switch; 4 pins but only 2 nets. Pick _H5mm variant if button height matters for the case. Debounced in firmware (15ms) — no RC network on the board
 BZ1,1,Magnetic buzzer 12mm,,Buzzer_12x9.5RM7.6 (THT),sidetone on TX + audio on RX,to buy,"12mm dia, 9.5mm tall, 7.6mm pin pitch. MUST BE PASSIVE — an active buzzer has its own oscillator and ignores tone(). Two pitches are load-bearing here: 700Hz your keying, 550Hz received"
 C1,1,Capacitor,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm (THT),input decoupling on +5V,to buy,"steadies the USB rail feeding the Supermini's regulator. Place near U1's 5V pin"
 C2,1,Capacitor,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm (THT),CC1101 local decoupling on +3V3,to buy,"place close to J1 pin 1. The radio switches ~35mA at keying speed; this supplies that first instant locally"
 TP1,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — +5V,to buy,"2mm pad, 1mm drill. Takes a probe tip, a wire, or a header pin"
 TP2,1,Test point,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,probe point — GND,to buy,"scope ground, next to TP1"
+TP3,1,Solder pad,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,+3V3 jumper pad (board side),to make,"one end of the +3V3 wire link. See docs/decisions.md §14 — the rail cannot reach J2 on one layer without cutting the ground pour"
+TP4,1,Solder pad,,TestPoint_THTPad_2.0x2.0mm_Drill1.0mm,+3V3 jumper pad (display side),to make,"other end of the link. A short wire between TP3 and TP4 completes +3V3"
 H1-H4,4,Mounting hole,M2,MountingHole_2.1mm,board mounting — one per corner,to make,"2.1mm drill = M2 clearance. Plain hole, no copper pad. M2 chosen deliberately — smaller head keeps the corners clear"
 ,1,Antenna whip,433 MHz,SMA male stub,RF,have,ships with the module; screws onto the board SMA socket. Detachable — case needs an opening. Never key the radio without it or a dummy load
 ,1,Dummy load 50 ohm,,SMA male,bench testing without emitting,to buy,REQUIRED before any transmit test. Use until ANATEL limits are settled — see docs/roadmap.md phase 4
-,1,PCB,,,main board,to make,fiber-laser engraved copper. SINGLE LAYER — one face only, no two-sided registration. 44 holes, 0.8-2.1mm
+,1,PCB,,,main board,to make,fiber-laser engraved copper. SINGLE LAYER — one face only, no two-sided registration. 46 holes, 0.8-2.1mm
 ,1,Enclosure,,,case,to make,Onshape; exports to mechanical/

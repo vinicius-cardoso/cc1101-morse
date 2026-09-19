@@ -254,10 +254,18 @@ SSD1306 on them if one is present — see `docs/decisions.md` §11.
 Address 0x3C, 128 × 64. Most modules carry their own pull-ups; if yours does
 not, add 4.7 kΩ from each line to 3V3.
 
-**The board now carries headers for it:** `J3` brings GPIO8/GPIO9 out, and `J2`
-brings `+3V3` and `GND`. Four pins, and an OLED plugs straight in. The firmware
-probes for it at startup and carries on without it, so leaving both unpopulated
-costs nothing.
+**The board carries a 4-pin socket for it**, `J2`: `GND`, `+3V3`, GPIO9 (SCL),
+GPIO8 (SDA) — the order most SSD1306 modules use, so one plugs straight in.
+Check your module's silkscreen anyway; VCC-first and GND-first both exist.
+
+The firmware probes for a display at startup and carries on without one, so
+leaving `J2` unpopulated costs nothing.
+
+> [!IMPORTANT]
+> `+3V3` reaches `J2` through a **wire link between `TP3` and `TP4`**, not
+> through copper. On one layer the rail could not get there without cutting the
+> ground pour that the CC1101 depends on — see `docs/decisions.md` §14. Solder
+> that link or the display gets no power.
 
 ## The buzzer must be passive
 

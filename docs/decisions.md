@@ -42,7 +42,7 @@ it, which keeps §2 and §3 intact.
   prerequisite for starting.
 - **Serviceability.** Parts can be desoldered and replaced with a plain iron.
 
-**Tradeoff accepted:** a larger board, and 44 holes to drill. Both are cheap
+**Tradeoff accepted:** a larger board, and 46 holes to drill. Both are cheap
 here — the board is sized by the Supermini and the CC1101 module, not by the
 passives, so going SMD would not shrink it much.
 
@@ -285,6 +285,40 @@ top, so a `B.Cu` export is a view *through* the laminate. Engraving it as
 exported puts a mirrored image on the copper, and every footprint lands
 reversed. The artwork has to be flipped before it reaches the laser — see
 `docs/fabrication.md`, which carries the check for it.
+
+## 14. One wire link, for `+3V3` to the display connector
+
+**Decision:** `+3V3` reaches `J2` through a soldered wire between two pads,
+`TP3` and `TP4`, rather than through copper. §3 forbids jumpers; this is the
+exception, and it is recorded here so it reads as a decision rather than a
+defect.
+
+**Why copper could not do it:** `J1` pin 4 and its trace sit directly between
+the `+3V3` rail and where the display connector had to go. On one layer there
+is no way around that — a trace cannot cross another trace.
+
+**Why the obvious workaround was worse.** The `+3V3` trace *can* be threaded
+between `U1` pads 9 and 10: they are 2.54 mm apart, leaving 1.70 mm of gap,
+and a 0.4 mm trace with 0.4 mm clearance needs 1.20 mm. DRC passes.
+
+But it leaves roughly 0.25 mm of pour on each side of that trace, and the pour
+is the ground return. `J1` pin 1 is the CC1101's ground. Threading `+3V3`
+through that gap severs the ground plane between the radio and the rest of the
+board, forcing its return current the long way round.
+
+**That is the trade: a visible wire, or a compromised RF ground.** A wire link
+is honest and costs ten seconds of soldering. A severed ground plane under a
+433 MHz transceiver is invisible, passes every check, and shows up later as
+poor range or an unstable receiver.
+
+**Consequence to remember:** the display gets no power until `TP3`–`TP4` is
+soldered. DRC will report `+3V3` as unconnected, correctly — the net genuinely
+arrives in two pieces, and the link is off-board. Do not "fix" that warning by
+routing through the pad gap.
+
+**Rejected:** a second layer for one trace. §3's whole argument is that this
+board does not need one, and reintroducing two-sided registration for a single
+optional-display power line is not a trade worth making.
 
 ## Open items
 
