@@ -4074,7 +4074,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "+3V3"
 			(at 100.33 109.9821 0)
 			(hide yes)
 			(show_name no)
@@ -4516,7 +4516,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "+3V3"
 			(at 88.9 109.9821 0)
 			(hide yes)
 			(show_name no)
