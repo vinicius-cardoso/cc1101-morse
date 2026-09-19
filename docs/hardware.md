@@ -254,9 +254,22 @@ SSD1306 on them if one is present — see `docs/decisions.md` §11.
 Address 0x3C, 128 × 64. Most modules carry their own pull-ups; if yours does
 not, add 4.7 kΩ from each line to 3V3.
 
-**The board carries a 4-pin socket for it**, `J2`: `GND`, `+3V3`, GPIO9 (SCL),
-GPIO8 (SDA) — the order most SSD1306 modules use, so one plugs straight in.
-Check your module's silkscreen anyway; VCC-first and GND-first both exist.
+**The board carries a 4-pin socket for it**, `J2`, wired in this order:
+
+| `J2` pad | Net | SSD1306 pin |
+|---|---|---|
+| 1 | `GND` | GND |
+| 2 | `+3V3` | VCC |
+| 3 | GPIO9 | SCL |
+| 4 | GPIO8 | SDA |
+
+**GND first, then VCC** — matching the module on hand. Other SSD1306 boards put
+VCC first; check the silkscreen before plugging one in, because reversing that
+pair destroys the display.
+
+Note that `J2` is rotated 90° on the PCB, so pad 1 sits at the **right-hand**
+end as the board is drawn. Pad numbers and left-to-right order are not the same
+thing here.
 
 The firmware probes for a display at startup and carries on without one, so
 leaving `J2` unpopulated costs nothing.
