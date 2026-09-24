@@ -524,7 +524,7 @@
     "last_paths": {
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "exports/",
       "specctra_dsn": "cc1101-morse.dsn",
       "step": "",
       "vrml": ""
