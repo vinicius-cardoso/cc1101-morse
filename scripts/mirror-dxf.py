@@ -1,54 +1,66 @@
 #!/usr/bin/env python3
-"""Mirror a KiCad DXF export about its own X centre.
+"""Mirror a KiCad DXF export about a vertical axis.
 
 The copper on this board is on B.Cu, and KiCad draws every layer from the top
 — so a B.Cu export is a view *through* the laminate. Engraving it as exported
-puts a reversed image on the copper. This flips it.
+puts a reversed image on the copper and nothing fits. This flips it.
 
-Usage:  mirror-dxf.py input.dxf output.dxf
+Usage:
+    mirror-dxf.py input.dxf output.dxf --board board.kicad_pcb
+    mirror-dxf.py input.dxf output.dxf --axis 150.0
 
-Only board geometry is mirrored. KiCad's DXF carries a few drawing-frame
-points far outside the board (at 0 and at the sheet edge); flipping those
-drags the extents out and corrupts the result, so they are left alone. The
-script verifies the board width is unchanged and exits non-zero if it is not.
+The mirror axis must be the board's X centre. Pass the `.kicad_pcb` and it is
+read from the Edge.Cuts outline; pass `--axis` to give it directly.
+
+Do not try to infer the axis from the DXF itself. KiCad's DXF carries
+drawing-frame points far outside the board, in units that differ between the
+GUI Plot dialog (inches by default) and `kicad-cli --ou mm`. Every heuristic
+for telling frame from board gets one of those cases wrong, and the failure is
+silent: the artwork still looks like a board, just mirrored about the wrong
+line, which no visual check reliably catches.
+
+Everything is mirrored, frame included. That is correct — the frame is not
+part of the engraving, and leaving it in place while flipping the board would
+only make the two disagree.
 """
+import argparse
 import re
 import sys
-
-# Board coordinates live in this range; anything outside is frame furniture.
-# Works for both inch and millimetre exports, since the board is ~1.5 in /
-# ~39 mm wide and the frame sits at 0 and several hundred units out.
-BOARD_MIN, BOARD_MAX = 1.0, 100.0
 
 # DXF group codes carrying an X coordinate.
 X_CODES = ("10", "11")
 
 
-def board_x_values(lines):
-    out = []
-    for i, line in enumerate(lines[:-1]):
-        if line.strip() in X_CODES:
-            try:
-                v = float(lines[i + 1])
-            except ValueError:
-                continue
-            if BOARD_MIN < v < BOARD_MAX:
-                out.append(v)
-    return out
+def axis_from_board(path):
+    """X centre of the Edge.Cuts outline, in millimetres."""
+    text = open(path).read()
+    rect = re.search(
+        r"\(gr_rect\s*\(start ([-\d.]+) ([-\d.]+)\)\s*\(end ([-\d.]+) ([-\d.]+)\)", text
+    )
+    if rect:
+        x1, _, x2, _ = (float(g) for g in rect.groups())
+        return (x1 + x2) / 2
 
-
-def main(src, dst):
-    lines = open(src).read().split("\n")
-
-    xs = board_x_values(lines)
+    # No rectangle: fall back to the extent of every Edge.Cuts line.
+    xs = []
+    for m in re.finditer(
+        r"\(gr_line\s*\(start ([-\d.]+) [-\d.]+\)\s*\(end ([-\d.]+) [-\d.]+\)(.*?)\)",
+        text,
+        re.S,
+    ):
+        if "Edge.Cuts" in m.group(3):
+            xs += [float(m.group(1)), float(m.group(2))]
     if not xs:
-        sys.exit(f"{src}: found no board geometry to mirror")
-    lo, hi = min(xs), max(xs)
-    axis = lo + hi          # x' = (lo + hi) - x
+        sys.exit(f"{path}: found no Edge.Cuts outline to take a centre from")
+    return (min(xs) + max(xs)) / 2
 
+
+def mirror(src, dst, axis):
+    lines = open(src).read().split("\n")
     out = []
+    flipped = 0
+
     i = 0
-    flipped = kept = 0
     while i < len(lines):
         out.append(lines[i])
         if lines[i].strip() in X_CODES and i + 1 < len(lines):
@@ -57,29 +69,57 @@ def main(src, dst):
             except ValueError:
                 i += 1
                 continue
-            if BOARD_MIN < v < BOARD_MAX:
-                out.append(repr(axis - v))
-                flipped += 1
-            else:
-                out.append(lines[i + 1])
-                kept += 1
+            out.append(repr(2 * axis - v))
+            flipped += 1
             i += 2
             continue
         i += 1
 
     open(dst, "w").write("\n".join(out))
+    return flipped
 
-    check = board_x_values(open(dst).read().split("\n"))
-    width_in, width_out = hi - lo, max(check) - min(check)
-    if abs(width_in - width_out) > 1e-6:
-        sys.exit(f"width changed: {width_in:.6f} -> {width_out:.6f}; not written correctly")
 
-    print(f"{src} -> {dst}")
-    print(f"  mirrored {flipped} coordinates about x={axis / 2:.4f}, left {kept} frame points")
-    print(f"  width {width_out:.4f} preserved")
+def x_extent(path):
+    lines = open(path).read().split("\n")
+    xs = []
+    for i, line in enumerate(lines[:-1]):
+        if line.strip() in X_CODES:
+            try:
+                xs.append(float(lines[i + 1]))
+            except ValueError:
+                pass
+    return (min(xs), max(xs)) if xs else None
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("src")
+    ap.add_argument("dst")
+    g = ap.add_mutually_exclusive_group(required=True)
+    g.add_argument("--board", help=".kicad_pcb to read the board centre from")
+    g.add_argument("--axis", type=float, help="mirror axis, in the DXF's own units")
+    args = ap.parse_args()
+
+    axis = args.axis if args.axis is not None else axis_from_board(args.board)
+
+    before = x_extent(args.src)
+    flipped = mirror(args.src, args.dst, axis)
+    after = x_extent(args.dst)
+
+    if before is None or after is None:
+        sys.exit("no X coordinates found")
+
+    # A mirror preserves width. If it does not, the axis was in the wrong
+    # units or the file was not what we thought.
+    w_in, w_out = before[1] - before[0], after[1] - after[0]
+    if abs(w_in - w_out) > 1e-6:
+        sys.exit(f"width changed: {w_in:.6f} -> {w_out:.6f}; axis {axis} is probably wrong")
+
+    print(f"{args.src} -> {args.dst}")
+    print(f"  mirrored {flipped} X coordinates about x={axis}")
+    print(f"  extent {before[0]:.3f}..{before[1]:.3f} -> {after[0]:.3f}..{after[1]:.3f}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        sys.exit(__doc__)
-    main(sys.argv[1], sys.argv[2])
+    main()

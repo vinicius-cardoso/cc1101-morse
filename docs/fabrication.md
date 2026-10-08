@@ -64,26 +64,39 @@ a view *through* the board. Put the copper face up on the laser bed and you are
 looking at it from the other side — so the artwork has to be **mirrored**, or
 every footprint lands reversed and nothing fits.
 
-**Use `cc1101-morse-B_Cu-MIRRORED.dxf`.** The unmirrored
-`cc1101-morse-B_Cu.dxf` is kept beside it for reference and for checking
-against the KiCad view; it is *not* the file to engrave.
+**Use the `-MIRRORED` files.** The plain exports are kept beside them for
+checking against the KiCad view; they are *not* what goes on the laser.
 
-Two ways to produce the mirrored copy:
+| File | |
+|---|---|
+| `cc1101-morse-B_Cu-MIRRORED.dxf` | **engrave this** |
+| `cc1101-morse-Edge_Cuts-MIRRORED.dxf` | **cut this** |
+| `cc1101-morse-B_Cu.dxf` | reference, matches the KiCad top view |
+| `cc1101-morse-Edge_Cuts.dxf` | reference |
+| `cc1101-morse.drl` | drill, 46 holes |
 
-- **KiCad's GUI:** File → Plot, format DXF, layer `B.Cu`, tick **Mirrored
-  plot** and **Plot graphic items using their contours**, untick reference
-  designators and values.
-- **`scripts/mirror-dxf.py`**, which flips the X coordinates of an existing
-  export. It mirrors only the board geometry and leaves the drawing-frame
-  points alone, so the board's width is preserved exactly — the script checks
-  that and refuses if it changes.
+Produce the mirrored pair with:
 
-> [!IMPORTANT]
-> **The GUI Plot dialog defaults to inches, not millimetres.** The committed
-> exports are in inches: the board reads 1.5354 × 2.3228 in. Tell BSLApp the
-> file is in inches on import, or the board arrives 25.4× wrong. The
-> `kicad-cli` commands above pass `--ou mm` and produce millimetre files, so
-> do not mix the two sources without checking.
+```sh
+python3 scripts/mirror-dxf.py \
+  exports/cc1101-morse-B_Cu.dxf exports/cc1101-morse-B_Cu-MIRRORED.dxf \
+  --board cc1101-morse.kicad_pcb
+```
+
+**The axis comes from the board, not from the DXF.** The script reads the
+Edge.Cuts outline out of the `.kicad_pcb` and mirrors about its X centre
+(150.0 mm here). That matters: KiCad's DXF carries drawing-frame points far
+outside the board, in units that differ between the GUI Plot dialog (inches by
+default) and `kicad-cli --ou mm`. Every attempt to guess the board's extent
+from the DXF alone got one of those cases wrong, and the failure is silent —
+the artwork still looks like a board, just mirrored about the wrong line.
+
+The script checks that the overall width is unchanged and refuses to write if
+it is not, since a mirror that changes width has used the wrong axis.
+
+KiCad's GUI can do it directly instead: File → Plot, tick **Mirrored plot** and
+**Plot graphic items using their contours**, untick reference designators and
+values. Watch the units there.
 
 **The cheap check that catches a bad mirror:** the board is not symmetric. `J1`
 sits at the top edge, `SW1` near the bottom, and the `vinilabs.cc` silkscreen
