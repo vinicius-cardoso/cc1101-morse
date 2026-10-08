@@ -56,20 +56,39 @@ def axis_from_board(path):
 
 
 def mirror(src, dst, axis):
+    """Flip X on entity geometry only.
+
+    Group codes 10 and 11 mean "X coordinate" inside an entity, but the same
+    numbers appear in the HEADER and TABLES sections as ordinary values.
+    Rewriting those corrupts the file: the first version of this script did,
+    and the result loaded in KiCad but hung every other DXF viewer.
+
+    So only the ENTITIES section is touched.
+    """
     lines = open(src).read().split("\n")
     out = []
     flipped = 0
+    in_entities = False
 
     i = 0
     while i < len(lines):
+        # Track which section we are in. A section starts with
+        #   0 / SECTION / 2 / <name>  and ends with  0 / ENDSEC.
+        if lines[i].strip() == "2" and i + 1 < len(lines):
+            if lines[i + 1].strip() == "ENTITIES":
+                in_entities = True
+        if lines[i].strip() == "ENDSEC":
+            in_entities = False
+
         out.append(lines[i])
-        if lines[i].strip() in X_CODES and i + 1 < len(lines):
+
+        if in_entities and lines[i].strip() in X_CODES and i + 1 < len(lines):
             try:
                 v = float(lines[i + 1])
             except ValueError:
                 i += 1
                 continue
-            out.append(repr(2 * axis - v))
+            out.append(f"{2 * axis - v:.6f}")
             flipped += 1
             i += 2
             continue
@@ -80,10 +99,16 @@ def mirror(src, dst, axis):
 
 
 def x_extent(path):
+    """X extent of entity geometry, ignoring header and table values."""
     lines = open(path).read().split("\n")
     xs = []
+    in_entities = False
     for i, line in enumerate(lines[:-1]):
-        if line.strip() in X_CODES:
+        if line.strip() == "2" and lines[i + 1].strip() == "ENTITIES":
+            in_entities = True
+        if line.strip() == "ENDSEC":
+            in_entities = False
+        if in_entities and line.strip() in X_CODES:
             try:
                 xs.append(float(lines[i + 1]))
             except ValueError:
