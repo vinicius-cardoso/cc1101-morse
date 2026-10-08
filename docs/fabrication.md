@@ -60,19 +60,36 @@ soldered on the **copper** face. So all copper lives on `B.Cu`, and `B.Cu` is
 what gets engraved.
 
 **KiCad draws every layer as seen from the top.** A `B.Cu` export is therefore
-a view *through* the board. When you put the copper face up on the laser bed,
-you are looking at it from the other side — so the artwork has to be
-**mirrored**, or every footprint lands reversed and nothing fits.
+a view *through* the board. Put the copper face up on the laser bed and you are
+looking at it from the other side — so the artwork has to be **mirrored**, or
+every footprint lands reversed and nothing fits.
 
-`kicad-cli` has no mirror flag for DXF, so mirror it in BSLApp (a horizontal
-flip about the board's centre).
+**Use `cc1101-morse-B_Cu-MIRRORED.dxf`.** The unmirrored
+`cc1101-morse-B_Cu.dxf` is kept beside it for reference and for checking
+against the KiCad view; it is *not* the file to engrave.
 
-**The cheap check that catches it:** the board is not symmetric. `J1` sits at
-the top edge and `SW1` near the bottom, and the `vinilabs.cc` silkscreen reads
-left to right. Put the exported outline and copper on screen together and look
-at any asymmetric feature — if the mirroring is wrong, text reads backwards and
-`J1` is on the wrong side. Compare against `media/pcb.png` before committing
-copper to laminate.
+Two ways to produce the mirrored copy:
+
+- **KiCad's GUI:** File → Plot, format DXF, layer `B.Cu`, tick **Mirrored
+  plot** and **Plot graphic items using their contours**, untick reference
+  designators and values.
+- **`scripts/mirror-dxf.py`**, which flips the X coordinates of an existing
+  export. It mirrors only the board geometry and leaves the drawing-frame
+  points alone, so the board's width is preserved exactly — the script checks
+  that and refuses if it changes.
+
+> [!IMPORTANT]
+> **The GUI Plot dialog defaults to inches, not millimetres.** The committed
+> exports are in inches: the board reads 1.5354 × 2.3228 in. Tell BSLApp the
+> file is in inches on import, or the board arrives 25.4× wrong. The
+> `kicad-cli` commands above pass `--ou mm` and produce millimetre files, so
+> do not mix the two sources without checking.
+
+**The cheap check that catches a bad mirror:** the board is not symmetric. `J1`
+sits at the top edge, `SW1` near the bottom, and the `vinilabs.cc` silkscreen
+reads left to right. Put the artwork on screen and look at any asymmetric
+feature — if the text reads backwards in the *mirrored* file, that is correct,
+because you will be looking at the copper from the other side.
 
 ## Polarity: the laser removes what it marks
 
