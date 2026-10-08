@@ -254,7 +254,7 @@ SSD1306 on them if one is present — see `docs/decisions.md` §11.
 Address 0x3C, 128 × 64. Most modules carry their own pull-ups; if yours does
 not, add 4.7 kΩ from each line to 3V3.
 
-**The board carries a 4-pin socket for it**, `J2`, wired in this order:
+**The board carries a 4-pin JST XH header for it**, `J2`, wired in this order:
 
 | `J2` pad | Net | SSD1306 pin |
 |---|---|---|
@@ -262,6 +262,10 @@ not, add 4.7 kΩ from each line to 3V3.
 | 2 | `+3V3` | VCC |
 | 3 | GPIO9 | SCL |
 | 4 | GPIO8 | SDA |
+
+`J2` is a **JST XH**, not a bare pin header: polarised, latching, and it will
+not fall out when the board is handled. Note the pitch is **2.50 mm, not
+2.54** — the pads sit off the board's grid, which is normal for this part.
 
 **GND first, then VCC** — matching the module on hand. Other SSD1306 boards put
 VCC first; check the silkscreen before plugging one in, because reversing that

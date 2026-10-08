@@ -70,9 +70,8 @@ checking against the KiCad view; they are *not* what goes on the laser.
 | File | |
 |---|---|
 | `cc1101-morse-B_Cu-MIRRORED.dxf` | **engrave this** |
-| `cc1101-morse-Edge_Cuts-MIRRORED.dxf` | **cut this** |
 | `cc1101-morse-B_Cu.dxf` | reference, matches the KiCad top view |
-| `cc1101-morse-Edge_Cuts.dxf` | reference |
+| `cc1101-morse-Edge_Cuts.dxf` | **cut this** — unmirrored; the outline is symmetric, so it needs no flip |
 | `cc1101-morse.drl` | drill, 46 holes |
 
 Produce the mirrored pair with:
@@ -140,13 +139,14 @@ thickness, and the laminate.
 
 ## Drill sizes
 
-46 holes in five sizes:
+46 holes in six sizes:
 
 | Size | Count | What |
 |---|---|---|
 | 0.80 mm | 4 | `C1`, `C2` |
 | 0.84 mm | 16 | CC1101 socket (`J1`) |
-| 1.00 mm | 18 | test points, `J2` |
+| 0.95 mm | 4 | JST XH display header (`J2`) |
+| 1.00 mm | 14 | test points, jumper pads |
 | 1.10 mm | 4 | tact switch (`SW1`) |
 | 2.10 mm | 4 | mounting holes (`H1`–`H4`) |
 
