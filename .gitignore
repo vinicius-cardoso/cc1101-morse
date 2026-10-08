@@ -47,3 +47,8 @@ Thumbs.db
 *.swo
 .vscode/
 .idea/
+
+# KiCad's Plot dialog defaults to the project directory. The laser files belong
+# in exports/ and nowhere else — two copies of the same artwork under different
+# names is how the wrong one reaches the machine.
+hardware/kicad/*/[!e]*.dxf
