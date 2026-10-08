@@ -73,6 +73,7 @@ checking against the KiCad view; they are *not* what goes on the laser.
 | `cc1101-morse-B_Cu.dxf` | reference, matches the KiCad top view |
 | `cc1101-morse-Edge_Cuts.dxf` | **cut this** — unmirrored; the outline is symmetric, so it needs no flip |
 | `cc1101-morse.drl` | drill, 46 holes |
+| `cc1101-morse-DRILL-MARKS.dxf` | **drill by hand from this** — 1 mm dots at every hole |
 
 Produce the mirrored pair with:
 
@@ -151,9 +152,26 @@ thickness, and the laminate.
 | 2.10 mm | 4 | mounting holes (`H1`–`H4`) |
 
 The drill file is Excellon, which BSLApp does not read — the holes are drilled
-mechanically, not lasered. If a visual guide helps, generate the map DXF with
-the commented-out flags above; it is not committed because it is 300 KB of
-picture describing what the 4 KB `.drl` already states exactly.
+mechanically, not lasered.
+
+**`cc1101-morse-DRILL-MARKS.dxf` is the one to use for hand drilling.** It is
+one 1 mm filled dot per hole and nothing else: no traces, no pour, nothing to
+read around. Print it or load it into the laser at low power to mark the
+copper, then centre-punch and drill.
+
+```sh
+python3 scripts/drill-marks-dxf.py \
+  exports/cc1101-morse.drl exports/cc1101-morse-DRILL-MARKS.dxf \
+  --mirror 150.0
+```
+
+**`--mirror 150.0` is not optional here.** The copper is engraved mirrored
+(see above), so marks generated from the raw drill file would land on the
+wrong side of the board. 150.0 mm is the board's X centre, the same axis the
+copper is mirrored about.
+
+Every dot is the same size whatever the hole is. The file says *where* to
+drill; the sizes are in the table below and in the `.drl`.
 
 > [!NOTE]
 > The mounting holes are **2.1 mm — M2 clearance**. This is deliberate, not a
